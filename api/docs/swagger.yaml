@@ -1,4 +1,26 @@
 definitions:
+  handlers.FileInfo:
+    properties:
+      isDir:
+        type: boolean
+      modTime:
+        type: string
+      mode:
+        type: string
+      name:
+        type: string
+      size:
+        type: integer
+    type: object
+  handlers.GetDirectoryContentsResponse:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/handlers.FileInfo'
+        type: array
+      path:
+        type: string
+    type: object
   handlers.RegisterRequest:
     properties:
       email:
@@ -32,6 +54,27 @@ paths:
       summary: Check Session
       tags:
       - auth
+  /directory-contents:
+    get:
+      consumes:
+      - application/json
+      description: Get contents of a directory
+      parameters:
+      - description: Path
+        in: path
+        name: path
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Directory Contents
+          schema:
+            $ref: '#/definitions/handlers.GetDirectoryContentsResponse'
+      summary: Directory Contents
+      tags:
+      - homeshare
   /login:
     post:
       description: Login
