@@ -4,8 +4,6 @@ import (
 	"encoding/json"
 	"net/http"
 	"os"
-
-	"github.com/gorilla/mux"
 )
 
 type FileInfo struct {
@@ -15,23 +13,34 @@ type FileInfo struct {
 	IsDir   bool   `json:"isDir"`
 }
 
+type GetDirectoryContentsRequest struct {
+	Path string `json:"path"`
+}
+
 type GetDirectoryContentsResponse struct {
 	Path  string     `json:"path"`
 	Items []FileInfo `json:"items"`
 }
 
-// @Router /directory-contents [get]
+// @Router /directory-contents [post]
 // @Tags homeshare
 // @Summary Directory Contents
 // @Description Get contents of a directory
 // @Accept json
 // @Produce json
-// @Param path path string true "Path"
+// @Param body body GetDirectoryContentsRequest true "Body"
 // @Success 200 {object} GetDirectoryContentsResponse "Directory Contents"
 func (h *Handler) DirectoryContentsHandler(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
 
-	path := vars["path"]
+	var directoryContentsRequest GetDirectoryContentsRequest
+	err := json.NewDecoder(r.Body).Decode(&directoryContentsRequest)
+	if err != nil {
+		http.Error(w, "Invalid JSON format", http.StatusBadRequest)
+		return
+	}
+
+	// Access the username from the parsed object
+	path := directoryContentsRequest.Path
 
 	homeShareRoot := os.Getenv("HOME_SHARE_ROOT")
 
@@ -79,6 +88,11 @@ func (h *Handler) DirectoryContentsHandler(w http.ResponseWriter, r *http.Reques
 	json.NewEncoder(w).Encode(response)
 }
 
+type CreateDirectoryRequest struct {
+	Path string `json:"path"`
+	Name string `json:"name"`
+}
+
 type CreateDirectoryResponse struct {
 	Path      string   `json:"path"`
 	Directory FileInfo `json:"directory"`
@@ -90,19 +104,26 @@ type CreateDirectoryResponse struct {
 // @Description Create a new directory
 // @Accept json
 // @Produce json
-// @Param path path string true "Path"
-// @Param name name string true "Name"
+// @Param body body CreateDirectoryRequest true "Body"
 // @Success 200 {object} CreateDirectoryResponse "New Directory"
 func (h *Handler) CreateDirectoryHandler(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
 
-	path := vars["path"]
-	name := vars["name"]
+	var createDirectoryRequest CreateDirectoryRequest
+	err := json.NewDecoder(r.Body).Decode(&createDirectoryRequest)
+	if err != nil {
+		http.Error(w, "Invalid JSON format", http.StatusBadRequest)
+		return
+	}
+
+	// Access the username from the parsed object
+	path := createDirectoryRequest.Path
+	name := createDirectoryRequest.Name
+
 	directory := os.Getenv("HOME_SHARE_ROOT") + path
 
 	newDirectory := directory + "/" + name
 
-	err := os.Mkdir(newDirectory, 0755)
+	err = os.Mkdir(newDirectory, 0755)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

@@ -1,4 +1,11 @@
 definitions:
+  handlers.CreateDirectoryRequest:
+    properties:
+      name:
+        type: string
+      path:
+        type: string
+    type: object
   handlers.CreateDirectoryResponse:
     properties:
       directory:
@@ -16,6 +23,11 @@ definitions:
         type: string
       size:
         type: integer
+    type: object
+  handlers.GetDirectoryContentsRequest:
+    properties:
+      path:
+        type: string
     type: object
   handlers.GetDirectoryContentsResponse:
     properties:
@@ -65,16 +77,12 @@ paths:
       - application/json
       description: Create a new directory
       parameters:
-      - description: Path
-        in: path
-        name: path
+      - description: Body
+        in: body
+        name: body
         required: true
-        type: string
-      - description: Name
-        in: path
-        name: name
-        required: true
-        type: string
+        schema:
+          $ref: '#/definitions/handlers.CreateDirectoryRequest'
       produces:
       - application/json
       responses:
@@ -86,16 +94,17 @@ paths:
       tags:
       - homeshare
   /directory-contents:
-    get:
+    post:
       consumes:
       - application/json
       description: Get contents of a directory
       parameters:
-      - description: Path
-        in: path
-        name: path
+      - description: Body
+        in: body
+        name: body
         required: true
-        type: string
+        schema:
+          $ref: '#/definitions/handlers.GetDirectoryContentsRequest'
       produces:
       - application/json
       responses:

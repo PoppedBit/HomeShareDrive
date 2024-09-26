@@ -63,18 +63,13 @@ const docTemplate = `{
                 "summary": "Create Directory",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "Path",
-                        "name": "path",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Name",
-                        "name": "name",
-                        "in": "path",
-                        "required": true
+                        "description": "Body",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handlers.CreateDirectoryRequest"
+                        }
                     }
                 ],
                 "responses": {
@@ -88,7 +83,7 @@ const docTemplate = `{
             }
         },
         "/directory-contents": {
-            "get": {
+            "post": {
                 "description": "Get contents of a directory",
                 "consumes": [
                     "application/json"
@@ -102,11 +97,13 @@ const docTemplate = `{
                 "summary": "Directory Contents",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "Path",
-                        "name": "path",
-                        "in": "path",
-                        "required": true
+                        "description": "Body",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handlers.GetDirectoryContentsRequest"
+                        }
                     }
                 ],
                 "responses": {
@@ -179,6 +176,17 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "handlers.CreateDirectoryRequest": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "path": {
+                    "type": "string"
+                }
+            }
+        },
         "handlers.CreateDirectoryResponse": {
             "type": "object",
             "properties": {
@@ -204,6 +212,14 @@ const docTemplate = `{
                 },
                 "size": {
                     "type": "integer"
+                }
+            }
+        },
+        "handlers.GetDirectoryContentsRequest": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "string"
                 }
             }
         },
