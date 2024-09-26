@@ -48,6 +48,45 @@ const docTemplate = `{
                 }
             }
         },
+        "/create-directory": {
+            "post": {
+                "description": "Create a new directory",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "homeshare"
+                ],
+                "summary": "Create Directory",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Path",
+                        "name": "path",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Name",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "New Directory",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.CreateDirectoryResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/directory-contents": {
             "get": {
                 "description": "Get contents of a directory",
@@ -140,6 +179,17 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "handlers.CreateDirectoryResponse": {
+            "type": "object",
+            "properties": {
+                "directory": {
+                    "$ref": "#/definitions/handlers.FileInfo"
+                },
+                "path": {
+                    "type": "string"
+                }
+            }
+        },
         "handlers.FileInfo": {
             "type": "object",
             "properties": {
@@ -147,9 +197,6 @@ const docTemplate = `{
                     "type": "boolean"
                 },
                 "modTime": {
-                    "type": "string"
-                },
-                "mode": {
                     "type": "string"
                 },
                 "name": {

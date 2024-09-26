@@ -1,11 +1,16 @@
 definitions:
+  handlers.CreateDirectoryResponse:
+    properties:
+      directory:
+        $ref: '#/definitions/handlers.FileInfo'
+      path:
+        type: string
+    type: object
   handlers.FileInfo:
     properties:
       isDir:
         type: boolean
       modTime:
-        type: string
-      mode:
         type: string
       name:
         type: string
@@ -54,6 +59,32 @@ paths:
       summary: Check Session
       tags:
       - auth
+  /create-directory:
+    post:
+      consumes:
+      - application/json
+      description: Create a new directory
+      parameters:
+      - description: Path
+        in: path
+        name: path
+        required: true
+        type: string
+      - description: Name
+        in: path
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: New Directory
+          schema:
+            $ref: '#/definitions/handlers.CreateDirectoryResponse'
+      summary: Create Directory
+      tags:
+      - homeshare
   /directory-contents:
     get:
       consumes:

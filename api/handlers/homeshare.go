@@ -78,3 +78,55 @@ func (h *Handler) DirectoryContentsHandler(w http.ResponseWriter, r *http.Reques
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(response)
 }
+
+type CreateDirectoryResponse struct {
+	Path      string   `json:"path"`
+	Directory FileInfo `json:"directory"`
+}
+
+// @Router /create-directory [post]
+// @Tags homeshare
+// @Summary Create Directory
+// @Description Create a new directory
+// @Accept json
+// @Produce json
+// @Param path path string true "Path"
+// @Param name name string true "Name"
+// @Success 200 {object} CreateDirectoryResponse "New Directory"
+func (h *Handler) CreateDirectoryHandler(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+
+	path := vars["path"]
+	name := vars["name"]
+	directory := os.Getenv("HOME_SHARE_ROOT") + path
+
+	newDirectory := directory + "/" + name
+
+	err := os.Mkdir(newDirectory, 0755)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// Return FileInfo of new directory
+	info, err := os.Stat(newDirectory)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	fileInfo := FileInfo{
+		Name:    info.Name(),
+		Size:    info.Size(),
+		ModTime: info.ModTime().String(),
+		IsDir:   info.IsDir(),
+	}
+
+	response := CreateDirectoryResponse{
+		Path:      path,
+		Directory: fileInfo,
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
+}

@@ -7,4 +7,5 @@ import (
 
 func registerHomeShareRoutes(r *mux.Router, handler *handlers.Handler) {
 	r.HandleFunc("/directory-contents", handler.DirectoryContentsHandler).Methods("GET")
+	r.HandleFunc("/create-directory", handler.CreateDirectoryHandler).Methods("POST")
 }
