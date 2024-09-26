@@ -1,0 +1,19 @@
+.MuiMenu-paper {
+  ul {
+    li {
+      a {
+        text-decoration: none;
+        color: inherit;
+
+        & > div {
+          display: inline-block;
+        }
+      }
+    }
+  }
+}
+
+.MuiDivider-root {
+  margin: 15px;
+  font-size: 1.5rem;
+}

@@ -1,0 +1,73 @@
+definitions:
+  handlers.RegisterRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /admin/users:
+    get:
+      description: Get All Users
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Get Users
+      tags:
+      - admin
+  /check-session:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Check Session
+      tags:
+      - auth
+  /login:
+    post:
+      description: Login
+      responses: {}
+      summary: Login
+      tags:
+      - auth
+  /logout:
+    get:
+      description: Logout
+      responses:
+        "200":
+          description: OK
+      summary: Logout
+      tags:
+      - auth
+  /register:
+    post:
+      consumes:
+      - application/json
+      description: Register a new user
+      parameters:
+      - description: Register Request
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.RegisterRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: User created
+          schema:
+            type: string
+      summary: Register User
+      tags:
+      - auth
+swagger: "2.0"
