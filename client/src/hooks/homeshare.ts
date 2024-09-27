@@ -16,6 +16,7 @@ export const useHomeShare = () => {
 
       if (response.status === 200) {
         const data = await response.json();
+        console.log(data);
         dispatch(setItems(data.items));
       } else {
         const error = await response.text();

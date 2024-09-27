@@ -4,7 +4,7 @@ import { PageHeader, Table } from "components";
 import { useHomeShare } from "hooks";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { TODO } from "types/types";
+import { TableColumn, TODO } from "types/types";
 
 const HomeShare = () => {
 
@@ -20,6 +20,10 @@ const HomeShare = () => {
       getDirectoryContents(path);
     }
   }, [path, items, isLoading, getDirectoryContents]);
+
+  const columns: TableColumn[] = [
+    { dataIndex: 'name', label: 'Name' },
+  ];
 
   return (
     <>
@@ -38,7 +42,7 @@ const HomeShare = () => {
           </ToggleButton>
         </ToggleButtonGroup>
       </div>
-      <Table data={items ?? []} columns={[]} actions={[]} pagination={false}/>
+      <Table data={items ?? []} columns={columns} actions={[]} pagination={false}/>
     </>
   );
 };
