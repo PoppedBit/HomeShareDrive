@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { IconButton, Menu, MenuItem } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
-import { TableAction } from 'shared/types';
+import { TableAction } from 'types/types';
 
 interface Props {
   actions: TableAction[];

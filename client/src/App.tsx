@@ -6,7 +6,7 @@ import {
   BottomNavigationAction,
   Typography
 } from '@mui/material';
-import { Admin, Login, Profile, Register, Settings, Users } from './views';
+import { Admin, HomeShare, Login, Profile, Register, Settings, Users } from './views';
 import 'styles/App.scss';
 import {
   setErrorMessage,
@@ -15,7 +15,7 @@ import {
 } from 'store/slices/notifications';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useDispatch, useSelector } from 'react-redux';
-import { TODO } from 'shared/types';
+import { TODO } from 'types/types';
 import { Dialog, Snackbars, Loading, Header } from 'components';
 import {
   AdminPanelSettings,
@@ -128,7 +128,7 @@ const App = () => {
             <Route path="/admin" element={<Admin />} />
             <Route path="/admin/users" element={<Users />} />
             <Route path="/:username" element={<Profile />} />
-            <Route path="/" element={<div>Home</div>} />
+            <Route path="/" element={<HomeShare />} />
           </Routes>
           <Loading isVisible={isLoadingMessage !== null} message={isLoadingMessage ?? ''} />
           <Snackbars

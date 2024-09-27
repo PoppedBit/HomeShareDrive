@@ -10,7 +10,7 @@ import {
   TableFooter
 } from '@mui/material';
 
-import { GUID, TODO, TableColumn } from 'shared/types';
+import { GUID, TODO, TableColumn } from 'types/types';
 import { ActionButton } from './ActionButton';
 import { Container, DragIcon } from './styles';
 

@@ -18,7 +18,7 @@ import {
   setSuccessMessage
 } from 'store/slices/notifications';
 import { setUser } from 'store/slices/user';
-import { TODO } from 'shared/types';
+import { TODO } from 'types/types';
 
 export const useLogin = () => {
   const dispatch = useDispatch();

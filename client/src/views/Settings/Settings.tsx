@@ -14,7 +14,7 @@ import { CirclePicker } from 'react-color';
 import { useAccountSettings } from 'hooks';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { TODO } from 'shared/types';
+import { TODO } from 'types/types';
 import { User } from 'types/auth';
 import { setErrorMessage } from 'store/slices/notifications';
 import { getUserPFP } from 'utils';

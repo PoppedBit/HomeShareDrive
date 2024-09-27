@@ -9,7 +9,7 @@ import {
   StyledAppBar
 } from './styles';
 import { useSelector } from 'react-redux';
-import { TODO } from 'shared/types';
+import { TODO } from 'types/types';
 import { AccountCircle } from '@mui/icons-material';
 import { getUserPFP } from 'utils';
 

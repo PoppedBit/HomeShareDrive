@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { Breadcrumbs } from '@mui/material';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import { BreadcrumbLink, Header, HeaderText } from './styles';
-import { TODO } from 'shared/types';
+import { TODO } from 'types/types';
 
 interface Props {
   text: string;

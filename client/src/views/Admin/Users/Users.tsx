@@ -3,7 +3,7 @@ import { useAdminUsers } from 'hooks';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { BanUserDialog, GreenCheck, PageHeader, Table } from 'components';
-import { TableAction, TableColumn, TODO } from 'shared/types';
+import { TableAction, TableColumn, TODO } from 'types/types';
 import { formatTimestamp } from 'utils';
 import { setErrorMessage } from 'store/slices/notifications';
 import { User } from 'types/admin';

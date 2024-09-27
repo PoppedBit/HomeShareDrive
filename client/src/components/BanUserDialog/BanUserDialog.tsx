@@ -3,7 +3,7 @@ import { Dialog, Form } from 'components';
 import { Button, TextField } from '@mui/material';
 import { useForm } from 'react-hook-form';
 import { useEffect } from 'react';
-import { TODO } from 'shared/types';
+import { TODO } from 'types/types';
 
 interface Props {
   isOpen: boolean;
