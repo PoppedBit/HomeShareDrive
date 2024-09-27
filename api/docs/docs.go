@@ -82,9 +82,9 @@ const docTemplate = `{
                 }
             }
         },
-        "/delete-directory": {
+        "/delete-item": {
             "delete": {
-                "description": "Delete a directory",
+                "description": "Delete a directory or file",
                 "consumes": [
                     "application/json"
                 ],
@@ -94,7 +94,7 @@ const docTemplate = `{
                 "tags": [
                     "homeshare"
                 ],
-                "summary": "Delete Directory",
+                "summary": "Delete Item",
                 "parameters": [
                     {
                         "description": "Body",
@@ -102,15 +102,15 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handlers.DeleteDirectoryRequest"
+                            "$ref": "#/definitions/handlers.DeleteItemRequest"
                         }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Deleted Directory",
+                        "description": "Deleted Item",
                         "schema": {
-                            "$ref": "#/definitions/handlers.DeleteDirectoryResponse"
+                            "$ref": "#/definitions/handlers.DeleteItemResponse"
                         }
                     }
                 }
@@ -232,7 +232,7 @@ const docTemplate = `{
                 }
             }
         },
-        "handlers.DeleteDirectoryRequest": {
+        "handlers.DeleteItemRequest": {
             "type": "object",
             "properties": {
                 "path": {
@@ -240,7 +240,7 @@ const docTemplate = `{
                 }
             }
         },
-        "handlers.DeleteDirectoryResponse": {
+        "handlers.DeleteItemResponse": {
             "type": "object",
             "properties": {
                 "path": {
