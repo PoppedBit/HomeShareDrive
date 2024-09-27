@@ -13,6 +13,16 @@ definitions:
       path:
         type: string
     type: object
+  handlers.DeleteDirectoryRequest:
+    properties:
+      path:
+        type: string
+    type: object
+  handlers.DeleteDirectoryResponse:
+    properties:
+      path:
+        type: string
+    type: object
   handlers.FileInfo:
     properties:
       isDir:
@@ -91,6 +101,28 @@ paths:
           schema:
             $ref: '#/definitions/handlers.CreateDirectoryResponse'
       summary: Create Directory
+      tags:
+      - homeshare
+  /delete-directory:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a directory
+      parameters:
+      - description: Body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.DeleteDirectoryRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Deleted Directory
+          schema:
+            $ref: '#/definitions/handlers.DeleteDirectoryResponse'
+      summary: Delete Directory
       tags:
       - homeshare
   /directory-contents:

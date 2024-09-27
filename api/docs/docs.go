@@ -82,6 +82,40 @@ const docTemplate = `{
                 }
             }
         },
+        "/delete-directory": {
+            "delete": {
+                "description": "Delete a directory",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "homeshare"
+                ],
+                "summary": "Delete Directory",
+                "parameters": [
+                    {
+                        "description": "Body",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handlers.DeleteDirectoryRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Deleted Directory",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.DeleteDirectoryResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/directory-contents": {
             "post": {
                 "description": "Get contents of a directory",
@@ -193,6 +227,22 @@ const docTemplate = `{
                 "directory": {
                     "$ref": "#/definitions/handlers.FileInfo"
                 },
+                "path": {
+                    "type": "string"
+                }
+            }
+        },
+        "handlers.DeleteDirectoryRequest": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "string"
+                }
+            }
+        },
+        "handlers.DeleteDirectoryResponse": {
+            "type": "object",
+            "properties": {
                 "path": {
                     "type": "string"
                 }

@@ -151,3 +151,46 @@ func (h *Handler) CreateDirectoryHandler(w http.ResponseWriter, r *http.Request)
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(response)
 }
+
+type DeleteDirectoryRequest struct {
+	Path string `json:"path"`
+}
+
+type DeleteDirectoryResponse struct {
+	Path string `json:"path"`
+}
+
+// @Router /delete-directory [delete]
+// @Tags homeshare
+// @Summary Delete Directory
+// @Description Delete a directory
+// @Accept json
+// @Produce json
+// @Param body body DeleteDirectoryRequest true "Body"
+// @Success 200 {object} DeleteDirectoryResponse "Deleted Directory"
+func (h *Handler) DeleteDirectoryHandler(w http.ResponseWriter, r *http.Request) {
+
+	var deleteDirectoryRequest DeleteDirectoryRequest
+	err := json.NewDecoder(r.Body).Decode(&deleteDirectoryRequest)
+	if err != nil {
+		http.Error(w, "Invalid JSON format", http.StatusBadRequest)
+		return
+	}
+
+	path := deleteDirectoryRequest.Path
+
+	directory := os.Getenv("HOME_SHARE_ROOT") + path
+
+	err = os.RemoveAll(directory)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	response := DeleteDirectoryResponse{
+		Path: path,
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
+}
