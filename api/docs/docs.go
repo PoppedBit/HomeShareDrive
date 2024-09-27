@@ -207,6 +207,40 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/rename-item": {
+            "post": {
+                "description": "Rename a directory or file",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "homeshare"
+                ],
+                "summary": "Rename Item",
+                "parameters": [
+                    {
+                        "description": "Body",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handlers.RenameItemRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Renamed Item",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.RenameItemResponse"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -297,6 +331,28 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "handlers.RenameItemRequest": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "path": {
+                    "type": "string"
+                }
+            }
+        },
+        "handlers.RenameItemResponse": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "path": {
                     "type": "string"
                 }
             }

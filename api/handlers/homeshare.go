@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"os"
+	"strings"
 )
 
 type FileInfo struct {
@@ -189,6 +190,56 @@ func (h *Handler) DeleteItemHandler(w http.ResponseWriter, r *http.Request) {
 
 	response := DeleteItemResponse{
 		Path: path,
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
+}
+
+type RenameItemRequest struct {
+	Path string `json:"path"`
+	Name string `json:"name"`
+}
+
+type RenameItemResponse struct {
+	Path string `json:"path"`
+	Name string `json:"name"`
+}
+
+// @Router /rename-item [post]
+// @Tags homeshare
+// @Summary Rename Item
+// @Description Rename a directory or file
+// @Accept json
+// @Produce json
+// @Param body body RenameItemRequest true "Body"
+// @Success 200 {object} RenameItemResponse "Renamed Item"
+func (h *Handler) RenameItemHandler(w http.ResponseWriter, r *http.Request) {
+
+	var renameItemRequest RenameItemRequest
+	err := json.NewDecoder(r.Body).Decode(&renameItemRequest)
+	if err != nil {
+		http.Error(w, "Invalid JSON format", http.StatusBadRequest)
+		return
+	}
+
+	path := renameItemRequest.Path
+	newName := renameItemRequest.Name
+
+	oldPath := os.Getenv("HOME_SHARE_ROOT") + path
+
+	directory := oldPath[:len(oldPath)-len(oldPath[strings.LastIndex(oldPath, "/"):])]
+	newPath := directory + "/" + newName
+
+	err = os.Rename(oldPath, newPath)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	response := RenameItemResponse{
+		Path: path,
+		Name: newName,
 	}
 
 	w.Header().Set("Content-Type", "application/json")

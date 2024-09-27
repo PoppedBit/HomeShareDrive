@@ -57,6 +57,20 @@ definitions:
       username:
         type: string
     type: object
+  handlers.RenameItemRequest:
+    properties:
+      name:
+        type: string
+      path:
+        type: string
+    type: object
+  handlers.RenameItemResponse:
+    properties:
+      name:
+        type: string
+      path:
+        type: string
+    type: object
 info:
   contact: {}
 paths:
@@ -185,4 +199,26 @@ paths:
       summary: Register User
       tags:
       - auth
+  /rename-item:
+    post:
+      consumes:
+      - application/json
+      description: Rename a directory or file
+      parameters:
+      - description: Body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.RenameItemRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Renamed Item
+          schema:
+            $ref: '#/definitions/handlers.RenameItemResponse'
+      summary: Rename Item
+      tags:
+      - homeshare
 swagger: "2.0"
