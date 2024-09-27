@@ -34,11 +34,6 @@ definitions:
       size:
         type: integer
     type: object
-  handlers.GetDirectoryContentsRequest:
-    properties:
-      path:
-        type: string
-    type: object
   handlers.GetDirectoryContentsResponse:
     properties:
       items:
@@ -140,17 +135,16 @@ paths:
       tags:
       - homeshare
   /directory-contents:
-    post:
+    get:
       consumes:
       - application/json
       description: Get contents of a directory
       parameters:
-      - description: Body
-        in: body
-        name: body
+      - description: Path
+        in: query
+        name: path
         required: true
-        schema:
-          $ref: '#/definitions/handlers.GetDirectoryContentsRequest'
+        type: string
       produces:
       - application/json
       responses:
@@ -159,6 +153,23 @@ paths:
           schema:
             $ref: '#/definitions/handlers.GetDirectoryContentsResponse'
       summary: Directory Contents
+      tags:
+      - homeshare
+  /download-file:
+    get:
+      consumes:
+      - application/json
+      description: Download a file
+      parameters:
+      - description: Path
+        in: query
+        name: path
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Download File
       tags:
       - homeshare
   /login:

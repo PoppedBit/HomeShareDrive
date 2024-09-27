@@ -14,34 +14,22 @@ type FileInfo struct {
 	IsDir   bool   `json:"isDir"`
 }
 
-type GetDirectoryContentsRequest struct {
-	Path string `json:"path"`
-}
-
 type GetDirectoryContentsResponse struct {
 	Path  string     `json:"path"`
 	Items []FileInfo `json:"items"`
 }
 
-// @Router /directory-contents [post]
+// @Router /directory-contents [get]
 // @Tags homeshare
 // @Summary Directory Contents
 // @Description Get contents of a directory
 // @Accept json
 // @Produce json
-// @Param body body GetDirectoryContentsRequest true "Body"
+// @Param path query string true "Path"
 // @Success 200 {object} GetDirectoryContentsResponse "Directory Contents"
 func (h *Handler) DirectoryContentsHandler(w http.ResponseWriter, r *http.Request) {
 
-	var directoryContentsRequest GetDirectoryContentsRequest
-	err := json.NewDecoder(r.Body).Decode(&directoryContentsRequest)
-	if err != nil {
-		http.Error(w, "Invalid JSON format", http.StatusBadRequest)
-		return
-	}
-
-	// Access the username from the parsed object
-	path := directoryContentsRequest.Path
+	path := r.URL.Query().Get("path")
 
 	homeShareRoot := os.Getenv("HOME_SHARE_ROOT")
 
@@ -244,4 +232,20 @@ func (h *Handler) RenameItemHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(response)
+}
+
+// @Router /download-file [get]
+// @Tags homeshare
+// @Summary Download File
+// @Description Download a file
+// @Accept json
+// @Produce json
+// @Param path query string true "Path"
+func (h *Handler) DownloadFileHandler(w http.ResponseWriter, r *http.Request) {
+
+	path := r.URL.Query().Get("path")
+
+	filePath := os.Getenv("HOME_SHARE_ROOT") + path
+
+	http.ServeFile(w, r, filePath)
 }

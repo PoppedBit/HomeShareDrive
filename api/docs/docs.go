@@ -117,7 +117,7 @@ const docTemplate = `{
             }
         },
         "/directory-contents": {
-            "post": {
+            "get": {
                 "description": "Get contents of a directory",
                 "consumes": [
                     "application/json"
@@ -131,13 +131,11 @@ const docTemplate = `{
                 "summary": "Directory Contents",
                 "parameters": [
                     {
-                        "description": "Body",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/handlers.GetDirectoryContentsRequest"
-                        }
+                        "type": "string",
+                        "description": "Path",
+                        "name": "path",
+                        "in": "query",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -148,6 +146,31 @@ const docTemplate = `{
                         }
                     }
                 }
+            }
+        },
+        "/download-file": {
+            "get": {
+                "description": "Download a file",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "homeshare"
+                ],
+                "summary": "Download File",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Path",
+                        "name": "path",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {}
             }
         },
         "/login": {
@@ -296,14 +319,6 @@ const docTemplate = `{
                 },
                 "size": {
                     "type": "integer"
-                }
-            }
-        },
-        "handlers.GetDirectoryContentsRequest": {
-            "type": "object",
-            "properties": {
-                "path": {
-                    "type": "string"
                 }
             }
         },
