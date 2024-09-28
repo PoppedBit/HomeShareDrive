@@ -9,6 +9,7 @@ import (
 
 type FileInfo struct {
 	Name    string `json:"name"`
+	Path    string `json:"path"`
 	Size    int64  `json:"size"`
 	ModTime string `json:"modTime"`
 	IsDir   bool   `json:"isDir"`
@@ -51,6 +52,7 @@ func (h *Handler) DirectoryContentsHandler(w http.ResponseWriter, r *http.Reques
 
 		fileInfo := FileInfo{
 			Name:    file.Name(),
+			Path:    path + "/" + file.Name(),
 			Size:    info.Size(),
 			ModTime: info.ModTime().String(),
 			IsDir:   info.IsDir(),

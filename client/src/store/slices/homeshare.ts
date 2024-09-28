@@ -1,9 +1,9 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { TODO } from 'types/types';
+import { FileInfo } from 'types/homehare';
 
 interface HomeshareState {
   path: string;
-  items: TODO[] | null;
+  items: FileInfo[] | null;
 }
 
 const initialState: HomeshareState = {
@@ -16,6 +16,7 @@ const homeshareSlice = createSlice({
   initialState,
   reducers: {
     setPath: (state, action) => {
+      console.log(action.payload)
       state.path = action.payload;
       state.items = null;
     },

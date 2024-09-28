@@ -5,7 +5,7 @@ export type GUID = string;
 export type TableColumn = {
   dataIndex: string | null;
   label: string;
-  render?: Function;
+  render?: (value: any, row?: any) => any;
   searchable?: boolean;
   editable?: boolean;
 };

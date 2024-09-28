@@ -1,13 +1,38 @@
-import { TableRows, Window } from "@mui/icons-material";
-import { ToggleButton, ToggleButtonGroup } from "@mui/material";
+import { Add, CreateNewFolder, Folder, FolderZip, Headphones, Image, PictureAsPdf, TableRows, Window } from "@mui/icons-material";
+import { Button, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
 import { PageHeader, Table } from "components";
 import { useHomeShare } from "hooks";
-import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useEffect, useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, useSearchParams } from "react-router-dom";
+import { setPath } from "store/slices/homeshare";
+import { FileInfo } from "types/homehare";
 import { TableColumn, TODO } from "types/types";
 
-const HomeShare = () => {
+const extToIcon = (ext: string) => {
+  switch(ext){
+    case 'pdf':
+      return <PictureAsPdf />;
+    case 'jpg':
+    case 'jpeg':
+    case 'png':
+    case 'ico':
+      return <Image />;
+    case 'zip':
+    case 'tar':
+      return <FolderZip />;
+    case 'mp3':
+    case 'wav':
+      return <Headphones />;
+    default:
+      return <Typography>{ext}</Typography>;
+  }
+}
 
+const HomeShare = () => {
+  const dispatch = useDispatch();
+  const [searchParams] = useSearchParams();
+  const pathParam = searchParams.get('path') ?? '/';
   const [view, setView] = useState<'table' | 'grid'>('table');
 
   const homeshare = useSelector((state: TODO) => state.homeshare);
@@ -16,19 +41,93 @@ const HomeShare = () => {
   const { isLoading, getDirectoryContents } = useHomeShare();
 
   useEffect(() => {
-    if(!isLoading && !items){
+    dispatch(setPath(pathParam));
+  }, [pathParam]);
+
+  useEffect(() => {
+    if(!isLoading && !items && path === pathParam){
       getDirectoryContents(path);
     }
-  }, [path, items, isLoading, getDirectoryContents]);
+  }, [path, pathParam, items, isLoading, getDirectoryContents]);
 
   const columns: TableColumn[] = [
-    { dataIndex: 'name', label: 'Name' },
+    {
+      dataIndex: '',
+      label: '',
+      render: (_value: string, row: FileInfo) => {
+        const { isDir, name } = row;
+        if(isDir){
+          return <Folder />;
+        }
+
+        const fileExt = name.split('.').pop();
+        if(!fileExt){
+          return <Typography>File</Typography>;
+        }
+
+        return extToIcon(fileExt);
+      }
+    },
+    { 
+      dataIndex: 'name', 
+      label: 'Name',
+      render: (_value: string, row: FileInfo) => {
+        const { name, isDir, path } = row;
+
+        if(isDir){
+          return <Link to={`/?path=${path}`}>{name}</Link>;
+        }
+
+        return name;
+      }
+    },
+    {
+      dataIndex: 'size',
+      label: 'Size',
+      render: (value: number, row: FileInfo) => {
+        if(row.isDir){
+          return '';
+        }
+        return value;
+      }
+    },
+    {
+      dataIndex: 'modTime',
+      label: 'Modified Time',
+      render: (value: string) => {
+        return value;
+      }
+    },
   ];
+
+  const breadCrumbLinks = path.split('/').filter(Boolean).map((_, index: number, arr: string[]) => {
+    const linkPath = [''].concat(arr.slice(0, index + 1)).join('/');
+    return {
+      text: arr[index],
+      href: `/?path=${linkPath}`
+    };
+  });
+
+  const currentDirectory = path.split('/').pop()
 
   return (
     <>
-      <PageHeader text={path} />
+      <PageHeader 
+        text={currentDirectory.length ? currentDirectory : 'Home'}
+        links={[{
+          text: 'Home',
+          href: '/'
+        }, ...breadCrumbLinks]}
+      />
       <div>
+        <Button
+          variant='contained'
+          startIcon={<CreateNewFolder />}
+        >New Folder</Button>
+        <Button
+          variant='contained'
+          startIcon={<Add />}
+        >Upload</Button>
         <ToggleButtonGroup
           value={view}
           exclusive
@@ -42,7 +141,7 @@ const HomeShare = () => {
           </ToggleButton>
         </ToggleButtonGroup>
       </div>
-      <Table data={items ?? []} columns={columns} actions={[]} pagination={false}/>
+      <Table data={items ?? []} columns={columns} actions={[]} pagination={false} idField="path"/>
     </>
   );
 };

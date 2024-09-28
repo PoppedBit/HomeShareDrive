@@ -120,14 +120,14 @@ const App = () => {
     <BrowserRouter>
       <ThemeProvider theme={theme}>
         <Header />
-        <Container maxWidth="md" sx={{ paddingTop: '2rem', paddingBottom: '4rem' }}>
+        <Container maxWidth="xl" sx={{ paddingTop: '2rem', paddingBottom: '4rem' }}>
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/settings/:tab?" element={<Settings />} />
             <Route path="/admin" element={<Admin />} />
             <Route path="/admin/users" element={<Users />} />
-            <Route path="/:username" element={<Profile />} />
+            <Route path="/u/:username" element={<Profile />} />
             <Route path="/" element={<HomeShare />} />
           </Routes>
           <Loading isVisible={isLoadingMessage !== null} message={isLoadingMessage ?? ''} />

@@ -2,7 +2,7 @@ import { baseUrl, getDeleteConfig, getPostConfig, getRequestConfig } from "api";
 
 export const requestDirectoryContents = async (path: string) => {
     const config = getRequestConfig();
-    return await fetch(`${baseUrl}/directory-contents?${path}`, config);
+    return await fetch(`${baseUrl}/directory-contents?path=${path}`, config);
 };
 
 export const requestCreateDirectory = async (path: string, directory: string) => {
@@ -34,5 +34,5 @@ export const requestRenameItem = async (path: string, name: string) => {
 // A clickable link might do...
 export const requestDownloadItem = async (path: string) => {
     const config = getRequestConfig();
-    return await fetch(`${baseUrl}/download-item?${path}`, config);
+    return await fetch(`${baseUrl}/download-item?path=${path}`, config);
 }

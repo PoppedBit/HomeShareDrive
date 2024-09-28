@@ -30,7 +30,7 @@ const Header = () => {
           </MainGrid>
           <RightGrid item xs={2}>
             {isAuthenticated && (
-              <AccountLink to={`/${username}`}>
+              <AccountLink to={`/u/${username}`}>
                 <Avatar src={getUserPFP(user.id)}>
                   <AccountCircle />
                 </Avatar>
