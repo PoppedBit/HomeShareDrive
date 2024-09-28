@@ -1,14 +1,14 @@
-import { Add, CreateNewFolder, Folder, FolderZip, Headphones, Image, PictureAsPdf, TableRows, Window } from "@mui/icons-material";
+import { Add, Code, CreateNewFolder, Edit, Folder, FolderZip, Headphones, Image, PictureAsPdf, TableRows, ThreeDRotation, Window } from "@mui/icons-material";
 import { Button, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
 import { PageHeader, Table } from "components";
 import dayjs from "dayjs";
 import { useHomeShare } from "hooks";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useSearchParams } from "react-router-dom";
 import { setPath } from "store/slices/homeshare";
 import { FileInfo } from "types/homehare";
-import { TableColumn, TODO } from "types/types";
+import { TableAction, TableColumn, TODO } from "types/types";
 
 const extToIcon = (ext: string) => {
   switch(ext){
@@ -21,10 +21,20 @@ const extToIcon = (ext: string) => {
       return <Image />;
     case 'zip':
     case 'tar':
+    case 'gz':
       return <FolderZip />;
     case 'mp3':
     case 'wav':
       return <Headphones />;
+    case 'stl':
+      return <ThreeDRotation />;
+    case 'ts':
+    case 'js':
+    case 'tsx':
+    case 'jsx':
+    case 'html':
+    case 'css':
+      return <Code />;
     default:
       return <Typography>{ext}</Typography>;
   }
@@ -110,6 +120,21 @@ const HomeShare = () => {
     },
   ];
 
+  const actions: TableAction[] = [
+    {
+      label: 'Rename',
+      onClick: (row: FileInfo) => {
+        alert('Rename');
+      }
+    },
+    {
+      label: 'Delete',
+      onClick: (row: FileInfo) => {
+        alert('Delete');
+      }
+    },
+  ];
+
   const breadCrumbLinks = path.split('/').filter(Boolean).map((_, index: number, arr: string[]) => {
     const linkPath = [''].concat(arr.slice(0, index + 1)).join('/');
     return {
@@ -151,7 +176,7 @@ const HomeShare = () => {
           </ToggleButton>
         </ToggleButtonGroup>
       </div>
-      <Table data={items ?? []} columns={columns} actions={[]} pagination={false} idField="path"/>
+      <Table data={items ?? []} columns={columns} actions={actions} pagination={false} idField="path"/>
     </>
   );
 };
