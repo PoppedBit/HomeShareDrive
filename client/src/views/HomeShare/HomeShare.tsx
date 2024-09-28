@@ -11,7 +11,7 @@ import {
   Upload,
   Window
 } from '@mui/icons-material';
-import { IconButton, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material';
+import { Checkbox, IconButton, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material';
 import { PageHeader, Table } from 'components';
 import dayjs from 'dayjs';
 import { useHomeShare } from 'hooks';
@@ -94,6 +94,13 @@ const HomeShare = () => {
   };
 
   const columns: TableColumn[] = [
+    {
+      dataIndex: '',
+      label: '',
+      render: (_value: string, _row: FileInfo) => {
+        return <Checkbox />;
+      }
+    },
     {
       dataIndex: '',
       label: '',
