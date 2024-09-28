@@ -1,8 +1,8 @@
-import { requestDirectoryContents } from "api";
+import { requestDeleteDirectory, requestDeleteItem, requestDirectoryContents } from "api";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { setItems } from "store/slices/homeshare";
-import { setErrorMessage } from "store/slices/notifications";
+import { removeItem, setItems } from "store/slices/homeshare";
+import { setErrorMessage, setSuccessMessage } from "store/slices/notifications";
 
 export const useHomeShare = () => {
   const dispatch = useDispatch();
@@ -30,8 +30,30 @@ export const useHomeShare = () => {
     }
   }
 
+  const deleteItem = async (path: string) => {
+    setIsLoading(true);
+
+    try {
+      const response = await requestDeleteItem(path);
+
+      if (response.status === 200) {
+        dispatch(setSuccessMessage(`"${path}" deleted`));
+        dispatch(removeItem(path));
+      } else {
+        const error = await response.text();
+        dispatch(setErrorMessage(error));
+      }
+    } catch (e) {
+      console.log(e);
+      dispatch(setErrorMessage('An unexpected error occured'));
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
   return {
     isLoading,
-    getDirectoryContents
+    getDirectoryContents,
+    deleteItem,
   }
 }

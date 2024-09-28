@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useSearchParams } from "react-router-dom";
 import { setPath } from "store/slices/homeshare";
+import { setConfirmationMessage } from "store/slices/notifications";
 import { FileInfo } from "types/homehare";
 import { TableAction, TableColumn, TODO } from "types/types";
 
@@ -57,7 +58,7 @@ const HomeShare = () => {
   const homeshare = useSelector((state: TODO) => state.homeshare);
   const { path, items } = homeshare;
 
-  const { isLoading, getDirectoryContents } = useHomeShare();
+  const { isLoading, getDirectoryContents, deleteItem } = useHomeShare();
 
   useEffect(() => {
     dispatch(setPath(pathParam));
@@ -68,6 +69,15 @@ const HomeShare = () => {
       getDirectoryContents(path);
     }
   }, [path, pathParam, items, isLoading, getDirectoryContents]);
+
+  const handleClickDelete = (row: FileInfo) => {
+    dispatch(setConfirmationMessage({
+      title: `Are you sure you want to delete ${row.name}?`,
+      onConfirm: () => {
+        deleteItem(row.path);
+      }
+    }));
+  }
 
   const columns: TableColumn[] = [
     {
@@ -129,9 +139,7 @@ const HomeShare = () => {
     },
     {
       label: 'Delete',
-      onClick: (row: FileInfo) => {
-        alert('Delete');
-      }
+      onClick: handleClickDelete,
     },
   ];
 

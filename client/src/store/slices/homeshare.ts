@@ -22,10 +22,14 @@ const homeshareSlice = createSlice({
     },
     setItems: (state, action) => {
       state.items = action.payload;
-    }
+    },
+    removeItem: (state, action) => {
+      const path = action.payload;
+      state.items = state.items!.filter(item => item.path !== path);
+    },
   }
 });
 
-export const { setPath, setItems } = homeshareSlice.actions;
+export const { setPath, setItems, removeItem } = homeshareSlice.actions;
 
 export default homeshareSlice.reducer;

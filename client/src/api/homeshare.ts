@@ -14,7 +14,7 @@ export const requestCreateDirectory = async (path: string, directory: string) =>
     return await fetch(`${baseUrl}/create-directory`, config);
 }
 
-export const requestDeleteDirectory = async (path: string) => {
+export const requestDeleteItem = async (path: string) => {
     const data = {
         path,
     };
