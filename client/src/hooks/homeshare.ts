@@ -1,8 +1,8 @@
-import { requestDeleteDirectory, requestDeleteItem, requestDirectoryContents } from "api";
-import { useState } from "react";
-import { useDispatch } from "react-redux";
-import { removeItem, setItems } from "store/slices/homeshare";
-import { setErrorMessage, setSuccessMessage } from "store/slices/notifications";
+import { requestDeleteDirectory, requestDeleteItem, requestDirectoryContents } from 'api';
+import { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { removeItem, setItems } from 'store/slices/homeshare';
+import { setErrorMessage, setSuccessMessage } from 'store/slices/notifications';
 
 export const useHomeShare = () => {
   const dispatch = useDispatch();
@@ -28,7 +28,7 @@ export const useHomeShare = () => {
     } finally {
       setIsLoading(false);
     }
-  }
+  };
 
   const deleteItem = async (path: string) => {
     setIsLoading(true);
@@ -49,11 +49,11 @@ export const useHomeShare = () => {
     } finally {
       setIsLoading(false);
     }
-  }
+  };
 
   return {
     isLoading,
     getDirectoryContents,
-    deleteItem,
-  }
-}
+    deleteItem
+  };
+};

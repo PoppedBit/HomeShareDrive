@@ -8,7 +8,7 @@ interface HomeshareState {
 
 const initialState: HomeshareState = {
   path: '/',
-  items: null,
+  items: null
 };
 
 const homeshareSlice = createSlice({
@@ -16,7 +16,7 @@ const homeshareSlice = createSlice({
   initialState,
   reducers: {
     setPath: (state, action) => {
-      console.log(action.payload)
+      console.log(action.payload);
       state.path = action.payload;
       state.items = null;
     },
@@ -25,8 +25,8 @@ const homeshareSlice = createSlice({
     },
     removeItem: (state, action) => {
       const path = action.payload;
-      state.items = state.items!.filter(item => item.path !== path);
-    },
+      state.items = state.items!.filter((item) => item.path !== path);
+    }
   }
 });
 

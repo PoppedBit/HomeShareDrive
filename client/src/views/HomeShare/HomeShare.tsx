@@ -1,18 +1,30 @@
-import { Add, Code, CreateNewFolder, Edit, Folder, FolderZip, Headphones, Image, PictureAsPdf, TableRows, ThreeDRotation, Window } from "@mui/icons-material";
-import { Button, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
-import { PageHeader, Table } from "components";
-import dayjs from "dayjs";
-import { useHomeShare } from "hooks";
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { Link, useSearchParams } from "react-router-dom";
-import { setPath } from "store/slices/homeshare";
-import { setConfirmationMessage } from "store/slices/notifications";
-import { FileInfo } from "types/homehare";
-import { TableAction, TableColumn, TODO } from "types/types";
+import {
+  Code,
+  CreateNewFolder,
+  Folder,
+  FolderZip,
+  Headphones,
+  Image,
+  PictureAsPdf,
+  TableRows,
+  ThreeDRotation,
+  Upload,
+  Window
+} from '@mui/icons-material';
+import { IconButton, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material';
+import { PageHeader, Table } from 'components';
+import dayjs from 'dayjs';
+import { useHomeShare } from 'hooks';
+import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Link, useSearchParams } from 'react-router-dom';
+import { setPath } from 'store/slices/homeshare';
+import { setConfirmationMessage } from 'store/slices/notifications';
+import { FileInfo } from 'types/homehare';
+import { TableAction, TableColumn, TODO } from 'types/types';
 
 const extToIcon = (ext: string) => {
-  switch(ext){
+  switch (ext) {
     case 'pdf':
       return <PictureAsPdf />;
     case 'jpg':
@@ -39,7 +51,7 @@ const extToIcon = (ext: string) => {
     default:
       return <Typography>{ext}</Typography>;
   }
-}
+};
 
 const formatBytes = (bytes: number) => {
   const units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB'];
@@ -47,7 +59,7 @@ const formatBytes = (bytes: number) => {
   const i = Math.floor(Math.log(bytes) / Math.log(1024));
   const readableSize = (bytes / Math.pow(1024, i)).toFixed(2);
   return `${readableSize}${units[i]}`;
-}
+};
 
 const HomeShare = () => {
   const dispatch = useDispatch();
@@ -65,19 +77,21 @@ const HomeShare = () => {
   }, [pathParam]);
 
   useEffect(() => {
-    if(!isLoading && !items && path === pathParam){
+    if (!isLoading && !items && path === pathParam) {
       getDirectoryContents(path);
     }
   }, [path, pathParam, items, isLoading, getDirectoryContents]);
 
   const handleClickDelete = (row: FileInfo) => {
-    dispatch(setConfirmationMessage({
-      title: `Are you sure you want to delete ${row.name}?`,
-      onConfirm: () => {
-        deleteItem(row.path);
-      }
-    }));
-  }
+    dispatch(
+      setConfirmationMessage({
+        title: `Are you sure you want to delete ${row.name}?`,
+        onConfirm: () => {
+          deleteItem(row.path);
+        }
+      })
+    );
+  };
 
   const columns: TableColumn[] = [
     {
@@ -85,25 +99,25 @@ const HomeShare = () => {
       label: '',
       render: (_value: string, row: FileInfo) => {
         const { isDir, name } = row;
-        if(isDir){
+        if (isDir) {
           return <Folder />;
         }
 
         const fileExt = name.split('.').pop();
-        if(!fileExt){
+        if (!fileExt) {
           return <Typography>File</Typography>;
         }
 
         return extToIcon(fileExt);
       }
     },
-    { 
-      dataIndex: 'name', 
+    {
+      dataIndex: 'name',
       label: 'Name',
       render: (_value: string, row: FileInfo) => {
         const { name, isDir, path } = row;
 
-        if(isDir){
+        if (isDir) {
           return <Link to={`/?path=${path}`}>{name}</Link>;
         }
 
@@ -114,7 +128,7 @@ const HomeShare = () => {
       dataIndex: 'size',
       label: 'Size',
       render: (value: number, row: FileInfo) => {
-        if(row.isDir){
+        if (row.isDir) {
           return '';
         }
         return formatBytes(value);
@@ -124,10 +138,10 @@ const HomeShare = () => {
       dataIndex: 'modTime',
       label: 'Modified Time',
       render: (value: string) => {
-        const parsedDate = dayjs(value, "YYYY-MM-DD HH:mm:ss.SSSSSSSSS Z");
-        return  parsedDate.format('YYYY-MM-DD HH:mm:ss');
+        const parsedDate = dayjs(value, 'YYYY-MM-DD HH:mm:ss.SSSSSSSSS Z');
+        return parsedDate.format('YYYY-MM-DD HH:mm:ss');
       }
-    },
+    }
   ];
 
   const actions: TableAction[] = [
@@ -139,52 +153,58 @@ const HomeShare = () => {
     },
     {
       label: 'Delete',
-      onClick: handleClickDelete,
-    },
+      onClick: handleClickDelete
+    }
   ];
 
-  const breadCrumbLinks = path.split('/').filter(Boolean).map((_, index: number, arr: string[]) => {
-    const linkPath = [''].concat(arr.slice(0, index + 1)).join('/');
-    return {
-      text: arr[index],
-      href: `/?path=${linkPath}`
-    };
-  });
+  const breadCrumbLinks = path
+    .split('/')
+    .filter(Boolean)
+    .map((_, index: number, arr: string[]) => {
+      const linkPath = [''].concat(arr.slice(0, index + 1)).join('/');
+      return {
+        text: arr[index],
+        href: `/?path=${linkPath}`
+      };
+    });
 
-  const currentDirectory = path.split('/').pop()
+  const currentDirectory = path.split('/').pop();
 
   return (
     <>
-      <PageHeader 
+      <PageHeader
         text={currentDirectory.length ? currentDirectory : 'Home'}
-        links={[{
-          text: '/',
-          href: '/'
-        }, ...breadCrumbLinks]}
+        links={[
+          {
+            text: '/',
+            href: '/'
+          },
+          ...breadCrumbLinks
+        ]}
       />
       <div>
-        <Button
-          variant='contained'
-          startIcon={<CreateNewFolder />}
-        >New Folder</Button>
-        <Button
-          variant='contained'
-          startIcon={<Add />}
-        >Upload</Button>
-        <ToggleButtonGroup
-          value={view}
-          exclusive
-          onChange={(_event, value) => setView(value)}
-        >
-          <ToggleButton value='table'>
+        <IconButton onClick={() => alert('Create new folder')}>
+          <CreateNewFolder />
+        </IconButton>
+        <IconButton onClick={() => alert('Upload file')}>
+          <Upload />
+        </IconButton>
+        <ToggleButtonGroup value={view} exclusive onChange={(_event, value) => setView(value)}>
+          <ToggleButton value="table">
             <TableRows />
           </ToggleButton>
-          <ToggleButton value='grid'>
+          <ToggleButton value="grid">
             <Window />
           </ToggleButton>
         </ToggleButtonGroup>
       </div>
-      <Table data={items ?? []} columns={columns} actions={actions} pagination={false} idField="path"/>
+      <Table
+        data={items ?? []}
+        columns={columns}
+        actions={actions}
+        pagination={false}
+        idField="path"
+      />
     </>
   );
 };
