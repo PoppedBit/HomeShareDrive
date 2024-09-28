@@ -1,6 +1,7 @@
 import { Add, CreateNewFolder, Folder, FolderZip, Headphones, Image, PictureAsPdf, TableRows, Window } from "@mui/icons-material";
 import { Button, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
 import { PageHeader, Table } from "components";
+import dayjs from "dayjs";
 import { useHomeShare } from "hooks";
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -27,6 +28,14 @@ const extToIcon = (ext: string) => {
     default:
       return <Typography>{ext}</Typography>;
   }
+}
+
+const formatBytes = (bytes: number) => {
+  const units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB'];
+  if (bytes === 0) return '0B';
+  const i = Math.floor(Math.log(bytes) / Math.log(1024));
+  const readableSize = (bytes / Math.pow(1024, i)).toFixed(2);
+  return `${readableSize}${units[i]}`;
 }
 
 const HomeShare = () => {
@@ -88,14 +97,15 @@ const HomeShare = () => {
         if(row.isDir){
           return '';
         }
-        return value;
+        return formatBytes(value);
       }
     },
     {
       dataIndex: 'modTime',
       label: 'Modified Time',
       render: (value: string) => {
-        return value;
+        const parsedDate = dayjs(value, "YYYY-MM-DD HH:mm:ss.SSSSSSSSS Z");
+        return  parsedDate.format('YYYY-MM-DD HH:mm:ss');
       }
     },
   ];
@@ -115,7 +125,7 @@ const HomeShare = () => {
       <PageHeader 
         text={currentDirectory.length ? currentDirectory : 'Home'}
         links={[{
-          text: 'Home',
+          text: '/',
           href: '/'
         }, ...breadCrumbLinks]}
       />
