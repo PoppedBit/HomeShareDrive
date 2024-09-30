@@ -1,4 +1,4 @@
-import { requestDeleteDirectory, requestDeleteItem, requestDirectoryContents } from 'api';
+import { requestDeleteItem, requestDirectoryContents } from 'api';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { removeItem, setItems } from 'store/slices/homeshare';
@@ -16,7 +16,6 @@ export const useHomeShare = () => {
 
       if (response.status === 200) {
         const data = await response.json();
-        console.log(data);
         dispatch(setItems(data.items));
       } else {
         const error = await response.text();

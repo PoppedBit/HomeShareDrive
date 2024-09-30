@@ -50,9 +50,15 @@ func (h *Handler) DirectoryContentsHandler(w http.ResponseWriter, r *http.Reques
 			return
 		}
 
+		filePath := path
+		if path != "/" {
+			filePath += "/"
+		}
+		filePath += file.Name()
+
 		fileInfo := FileInfo{
 			Name:    file.Name(),
-			Path:    path + "/" + file.Name(),
+			Path:    filePath,
 			Size:    info.Size(),
 			ModTime: info.ModTime().String(),
 			IsDir:   info.IsDir(),

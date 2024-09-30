@@ -16,7 +16,6 @@ const homeshareSlice = createSlice({
   initialState,
   reducers: {
     setPath: (state, action) => {
-      console.log(action.payload);
       state.path = action.payload;
       state.items = null;
     },

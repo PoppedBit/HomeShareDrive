@@ -72,6 +72,8 @@ const HomeShare = () => {
 
   const { isLoading, getDirectoryContents, deleteItem } = useHomeShare();
 
+  const isRoot = path === '/';
+
   useEffect(() => {
     dispatch(setPath(pathParam));
   }, [pathParam]);
@@ -164,28 +166,26 @@ const HomeShare = () => {
     }
   ];
 
-  const breadCrumbLinks = path
-    .split('/')
-    .filter(Boolean)
-    .map((_, index: number, arr: string[]) => {
-      const linkPath = [''].concat(arr.slice(0, index + 1)).join('/');
-      return {
-        text: arr[index],
-        href: `/?path=${linkPath}`
-      };
-    });
-
   const currentDirectory = path.split('/').pop();
+
+  const breadCrumbLinks = path
+  .split('/')
+  .slice(0, -1)
+  .filter(Boolean)
+  .map((_, index: number, arr: string[]) => {
+    const linkPath = [''].concat(arr.slice(0, index + 1)).join('/');
+    return {
+      text: arr[index],
+      href: `/?path=${linkPath}`
+    };
+  });
 
   return (
     <>
       <PageHeader
         text={currentDirectory.length ? currentDirectory : 'Home'}
         links={[
-          {
-            text: '/',
-            href: '/'
-          },
+          ...(isRoot ? [] : [{ text: 'Home', href: '/' }]),
           ...breadCrumbLinks
         ]}
       />
