@@ -11,11 +11,12 @@ import {
   Upload,
   Window
 } from '@mui/icons-material';
-import { Checkbox, IconButton, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material';
-import { PageHeader, Table } from 'components';
+import { Button, Checkbox, IconButton, TextField, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material';
+import { Dialog, Form, PageHeader, Table } from 'components';
 import dayjs from 'dayjs';
 import { useHomeShare } from 'hooks';
 import { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useSearchParams } from 'react-router-dom';
 import { setPath } from 'store/slices/homeshare';
@@ -66,6 +67,8 @@ const HomeShare = () => {
   const [searchParams] = useSearchParams();
   const pathParam = searchParams.get('path') ?? '/';
   const [view, setView] = useState<'table' | 'grid'>('table');
+  const [isNameDialogOpen, setIsNameDialogOpen] = useState<'add' | 'edit' | false>(false);
+  const {register, handleSubmit} = useForm();
 
   const homeshare = useSelector((state: TODO) => state.homeshare);
   const { path, items } = homeshare;
@@ -94,6 +97,10 @@ const HomeShare = () => {
       })
     );
   };
+
+  const submitNameDialog = (data: TODO) => {
+    alert(`TODO: Create directory with name ${data.name}`);
+  }
 
   const columns: TableColumn[] = [
     {
@@ -190,7 +197,7 @@ const HomeShare = () => {
         ]}
       />
       <div>
-        <IconButton onClick={() => alert('Create new folder')}>
+        <IconButton onClick={() => setIsNameDialogOpen('add')}>
           <CreateNewFolder />
         </IconButton>
         <IconButton onClick={() => alert('Upload file')}>
@@ -212,6 +219,36 @@ const HomeShare = () => {
         pagination={false}
         idField="path"
       />
+      <Dialog
+        isOpen={Boolean(isNameDialogOpen)}
+        onClose={() => setIsNameDialogOpen(false)}
+        title={`TODO`}
+        buttons={<>
+          <Button
+            variant="contained"
+            onClick={() => {
+              handleSubmit(submitNameDialog)();
+            }}
+          >
+            Submit
+          </Button>
+          <Button
+            onClick={() => {
+              setIsNameDialogOpen(false);
+            }}
+          >
+            Cancel
+          </Button>
+        </>}
+      >
+        <Form onSubmit={handleSubmit(submitNameDialog)}>
+          <TextField
+            label="Name"
+            fullWidth
+            {...register('name', { required: true })}
+          />
+        </Form>
+      </Dialog>
     </>
   );
 };
