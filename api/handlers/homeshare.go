@@ -4,8 +4,11 @@ import (
 	"encoding/json"
 	"net/http"
 	"os"
+	"path/filepath"
 	"strings"
 )
+
+var PathDelimiter = string(filepath.Separator)
 
 type FileInfo struct {
 	Name    string `json:"name"`
@@ -51,8 +54,8 @@ func (h *Handler) DirectoryContentsHandler(w http.ResponseWriter, r *http.Reques
 		}
 
 		filePath := path
-		if path != "/" {
-			filePath += "/"
+		if path != PathDelimiter {
+			filePath += PathDelimiter
 		}
 		filePath += file.Name()
 
@@ -118,7 +121,7 @@ func (h *Handler) CreateDirectoryHandler(w http.ResponseWriter, r *http.Request)
 
 	directory := os.Getenv("HOME_SHARE_ROOT") + path
 
-	newDirectory := directory + "/" + name
+	newDirectory := directory + PathDelimiter + name
 
 	err = os.Mkdir(newDirectory, 0755)
 	if err != nil {
@@ -224,8 +227,8 @@ func (h *Handler) RenameItemHandler(w http.ResponseWriter, r *http.Request) {
 
 	oldPath := os.Getenv("HOME_SHARE_ROOT") + path
 
-	directory := oldPath[:len(oldPath)-len(oldPath[strings.LastIndex(oldPath, "/"):])]
-	newPath := directory + "/" + newName
+	directory := oldPath[:len(oldPath)-len(oldPath[strings.LastIndex(oldPath, PathDelimiter):])]
+	newPath := directory + PathDelimiter + newName
 
 	err = os.Rename(oldPath, newPath)
 	if err != nil {
