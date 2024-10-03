@@ -1,4 +1,4 @@
-import { requestDeleteItem, requestDirectoryContents } from 'api';
+import { requestCreateDirectory, requestDeleteItem, requestDirectoryContents, requestRenameItem } from 'api';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { removeItem, setItems } from 'store/slices/homeshare';
@@ -29,6 +29,48 @@ export const useHomeShare = () => {
     }
   };
 
+  const addDirectory = async (path: string, name: string) => {
+    setIsLoading(true);
+
+    try {
+      const response = await requestCreateDirectory(path, name);
+
+      if (response.status === 200) {
+        dispatch(setSuccessMessage(`"${name}" created`));
+        getDirectoryContents(path);
+      } else {
+        const error = await response.text();
+        dispatch(setErrorMessage(error));
+      }
+    } catch (e) {
+      console.log(e);
+      dispatch(setErrorMessage('An unexpected error occured'));
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  const renameItem = async (path: string, oldName: string,  newName: string) => {
+    setIsLoading(true);
+
+    try {
+      const response = await requestRenameItem(path+"/"+oldName, newName);
+
+      if (response.status === 200) {
+        dispatch(setSuccessMessage(`"${oldName}" renamed to "${newName}"`));
+        getDirectoryContents(path);
+      } else {
+        const error = await response.text();
+        dispatch(setErrorMessage(error));
+      }
+    } catch (e) {
+      console.log(e);
+      dispatch(setErrorMessage('An unexpected error occured'));
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
   const deleteItem = async (path: string) => {
     setIsLoading(true);
 
@@ -53,6 +95,8 @@ export const useHomeShare = () => {
   return {
     isLoading,
     getDirectoryContents,
+    addDirectory,
+    renameItem,
     deleteItem
   };
 };

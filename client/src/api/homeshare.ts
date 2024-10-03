@@ -5,10 +5,10 @@ export const requestDirectoryContents = async (path: string) => {
   return await fetch(`${baseUrl}/directory-contents?path=${path}`, config);
 };
 
-export const requestCreateDirectory = async (path: string, directory: string) => {
+export const requestCreateDirectory = async (path: string, name: string) => {
   const data = {
     path,
-    directory
+    name
   };
   const config = getPostConfig(data);
   return await fetch(`${baseUrl}/create-directory`, config);

@@ -16,7 +16,7 @@ import { Dialog, Form, PageHeader, Table } from 'components';
 import dayjs from 'dayjs';
 import { useHomeShare } from 'hooks';
 import { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { set, useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useSearchParams } from 'react-router-dom';
 import { setPath } from 'store/slices/homeshare';
@@ -67,13 +67,13 @@ const HomeShare = () => {
   const [searchParams] = useSearchParams();
   const pathParam = searchParams.get('path') ?? '/';
   const [view, setView] = useState<'table' | 'grid'>('table');
-  const [isNameDialogOpen, setIsNameDialogOpen] = useState<'add' | 'edit' | false>(false);
+  const [isNameDialogOpen, setIsNameDialogOpen] = useState<boolean | FileInfo>(false);
   const {register, handleSubmit} = useForm();
 
   const homeshare = useSelector((state: TODO) => state.homeshare);
   const { path, items } = homeshare;
 
-  const { isLoading, getDirectoryContents, deleteItem } = useHomeShare();
+  const { isLoading, getDirectoryContents, addDirectory, renameItem, deleteItem } = useHomeShare();
 
   const isRoot = path === '/';
 
@@ -98,8 +98,17 @@ const HomeShare = () => {
     );
   };
 
-  const submitNameDialog = (data: TODO) => {
-    alert(`TODO: Create directory with name ${data.name}`);
+  const submitNameDialog = ({name}: {name: string}) => {
+    if (!isNameDialogOpen) {
+      return;
+    }
+
+    if (isNameDialogOpen === true) {
+      addDirectory(path, name);
+    } else {
+      renameItem(path, isNameDialogOpen.name, name);
+    }
+    setIsNameDialogOpen(false);
   }
 
   const columns: TableColumn[] = [
@@ -164,7 +173,7 @@ const HomeShare = () => {
     {
       label: 'Rename',
       onClick: (row: FileInfo) => {
-        alert('Rename');
+        setIsNameDialogOpen(row);
       }
     },
     {
@@ -197,7 +206,7 @@ const HomeShare = () => {
         ]}
       />
       <div>
-        <IconButton onClick={() => setIsNameDialogOpen('add')}>
+        <IconButton onClick={() => setIsNameDialogOpen(true)}>
           <CreateNewFolder />
         </IconButton>
         <IconButton onClick={() => alert('Upload file')}>
@@ -222,7 +231,7 @@ const HomeShare = () => {
       <Dialog
         isOpen={Boolean(isNameDialogOpen)}
         onClose={() => setIsNameDialogOpen(false)}
-        title={`TODO`}
+        title={isNameDialogOpen === true ? `Add Directory to ${path}` : `Rename "${isNameDialogOpen.name}"`}
         buttons={<>
           <Button
             variant="contained"
