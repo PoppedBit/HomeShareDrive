@@ -68,7 +68,7 @@ const HomeShare = () => {
   const pathParam = searchParams.get('path') ?? '/';
   const [view, setView] = useState<'table' | 'grid'>('table');
   const [isNameDialogOpen, setIsNameDialogOpen] = useState<boolean | FileInfo>(false);
-  const {register, handleSubmit} = useForm();
+  const {register, handleSubmit, reset} = useForm();
 
   const homeshare = useSelector((state: TODO) => state.homeshare);
   const { path, items } = homeshare;
@@ -86,6 +86,12 @@ const HomeShare = () => {
       getDirectoryContents(path);
     }
   }, [path, pathParam, items, isLoading, getDirectoryContents]);
+
+  useEffect(() => {
+    if (!isNameDialogOpen) {
+      reset();
+    }
+  }, [isNameDialogOpen, reset]);
 
   const handleClickDelete = (row: FileInfo) => {
     dispatch(
@@ -255,6 +261,7 @@ const HomeShare = () => {
             label="Name"
             fullWidth
             {...register('name', { required: true })}
+            autoFocus
           />
         </Form>
       </Dialog>
