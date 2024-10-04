@@ -55,7 +55,7 @@ type GetDirectoryContentsResponse struct {
 // @Param path query string true "Path"
 // @Success 200 {object} GetDirectoryContentsResponse "Directory Contents"
 func (h *Handler) DirectoryContentsHandler(w http.ResponseWriter, r *http.Request) {
-	isAuthorized := CheckIsAdmin(h, r)
+	isAuthorized := CheckCanHomeshare(h, r)
 	if !isAuthorized {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
@@ -135,7 +135,7 @@ type CreateDirectoryResponse struct {
 // @Param body body CreateDirectoryRequest true "Body"
 // @Success 200 {object} CreateDirectoryResponse "New Directory"
 func (h *Handler) CreateDirectoryHandler(w http.ResponseWriter, r *http.Request) {
-	isAuthorized := CheckIsAdmin(h, r)
+	isAuthorized := CheckCanHomeshare(h, r)
 	if !isAuthorized {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
@@ -202,7 +202,7 @@ type DeleteItemResponse struct {
 // @Param body body DeleteItemRequest true "Body"
 // @Success 200 {object} DeleteItemResponse "Deleted Item"
 func (h *Handler) DeleteItemHandler(w http.ResponseWriter, r *http.Request) {
-	isAuthorized := CheckIsAdmin(h, r)
+	isAuthorized := CheckCanHomeshare(h, r)
 	if !isAuthorized {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
@@ -252,7 +252,7 @@ type RenameItemResponse struct {
 // @Param body body RenameItemRequest true "Body"
 // @Success 200 {object} RenameItemResponse "Renamed Item"
 func (h *Handler) RenameItemHandler(w http.ResponseWriter, r *http.Request) {
-	isAuthorized := CheckIsAdmin(h, r)
+	isAuthorized := CheckCanHomeshare(h, r)
 	if !isAuthorized {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
@@ -296,7 +296,7 @@ func (h *Handler) RenameItemHandler(w http.ResponseWriter, r *http.Request) {
 // @Produce json
 // @Param path query string true "Path"
 func (h *Handler) DownloadFileHandler(w http.ResponseWriter, r *http.Request) {
-	isAuthorized := CheckIsAdmin(h, r)
+	isAuthorized := CheckCanHomeshare(h, r)
 	if !isAuthorized {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
@@ -305,6 +305,12 @@ func (h *Handler) DownloadFileHandler(w http.ResponseWriter, r *http.Request) {
 	path := r.URL.Query().Get("path")
 
 	filePath := os.Getenv("HOME_SHARE_ROOT") + path
+
+	_, err := os.Stat(filePath)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 
 	http.ServeFile(w, r, filePath)
 }
