@@ -6,6 +6,8 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/PoppedBit/HomeShareDrive/models"
 )
 
 var PathDelimiter = string(filepath.Separator)
@@ -16,6 +18,27 @@ type FileInfo struct {
 	Size    int64  `json:"size"`
 	ModTime string `json:"modTime"`
 	IsDir   bool   `json:"isDir"`
+}
+
+// only verified users can homeshare
+func CheckCanHomeshare(h *Handler, r *http.Request) bool {
+	session, err := h.Store.Get(r, "session")
+	if err != nil {
+		return false
+	}
+
+	userID := session.Values["id"]
+	if userID == nil {
+		return false
+	}
+
+	var user models.User
+	result := h.DB.First(&user, userID)
+	if result.Error != nil {
+		return false
+	}
+
+	return user.IsEmailVerified || user.IsAdmin
 }
 
 type GetDirectoryContentsResponse struct {
@@ -32,6 +55,11 @@ type GetDirectoryContentsResponse struct {
 // @Param path query string true "Path"
 // @Success 200 {object} GetDirectoryContentsResponse "Directory Contents"
 func (h *Handler) DirectoryContentsHandler(w http.ResponseWriter, r *http.Request) {
+	isAuthorized := CheckIsAdmin(h, r)
+	if !isAuthorized {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
 
 	path := r.URL.Query().Get("path")
 
@@ -107,6 +135,11 @@ type CreateDirectoryResponse struct {
 // @Param body body CreateDirectoryRequest true "Body"
 // @Success 200 {object} CreateDirectoryResponse "New Directory"
 func (h *Handler) CreateDirectoryHandler(w http.ResponseWriter, r *http.Request) {
+	isAuthorized := CheckIsAdmin(h, r)
+	if !isAuthorized {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
 
 	var createDirectoryRequest CreateDirectoryRequest
 	err := json.NewDecoder(r.Body).Decode(&createDirectoryRequest)
@@ -169,6 +202,11 @@ type DeleteItemResponse struct {
 // @Param body body DeleteItemRequest true "Body"
 // @Success 200 {object} DeleteItemResponse "Deleted Item"
 func (h *Handler) DeleteItemHandler(w http.ResponseWriter, r *http.Request) {
+	isAuthorized := CheckIsAdmin(h, r)
+	if !isAuthorized {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
 
 	var deleteItemRequest DeleteItemRequest
 	err := json.NewDecoder(r.Body).Decode(&deleteItemRequest)
@@ -214,6 +252,11 @@ type RenameItemResponse struct {
 // @Param body body RenameItemRequest true "Body"
 // @Success 200 {object} RenameItemResponse "Renamed Item"
 func (h *Handler) RenameItemHandler(w http.ResponseWriter, r *http.Request) {
+	isAuthorized := CheckIsAdmin(h, r)
+	if !isAuthorized {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
 
 	var renameItemRequest RenameItemRequest
 	err := json.NewDecoder(r.Body).Decode(&renameItemRequest)
@@ -253,6 +296,11 @@ func (h *Handler) RenameItemHandler(w http.ResponseWriter, r *http.Request) {
 // @Produce json
 // @Param path query string true "Path"
 func (h *Handler) DownloadFileHandler(w http.ResponseWriter, r *http.Request) {
+	isAuthorized := CheckIsAdmin(h, r)
+	if !isAuthorized {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
 
 	path := r.URL.Query().Get("path")
 
