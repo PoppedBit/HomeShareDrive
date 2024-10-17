@@ -11,6 +11,7 @@ func registerHomeShareRoutes(r *mux.Router, handler *handlers.Handler) {
 	r.HandleFunc("/delete-item", handler.DeleteItemHandler).Methods("DELETE")
 	r.HandleFunc("/rename-item", handler.RenameItemHandler).Methods("POST")
 	r.HandleFunc("/download-file", handler.DownloadFileHandler).Methods("GET")
+	// TODO - Upload
 	// TODO - Move
 	// TODO - Copy
 	// TODO - download directory

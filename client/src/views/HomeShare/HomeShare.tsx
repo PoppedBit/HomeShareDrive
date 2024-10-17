@@ -12,7 +12,7 @@ import {
   Upload,
   Window
 } from '@mui/icons-material';
-import { Button, Checkbox, IconButton, TextField, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material';
+import { Button, Checkbox, IconButton, TextField, ToggleButton, ToggleButtonGroup, Tooltip, Typography } from '@mui/material';
 import { Dialog, Form, PageHeader, Table } from 'components';
 import dayjs from 'dayjs';
 import { useHomeShare } from 'hooks';
@@ -24,6 +24,7 @@ import { setPath } from 'store/slices/homeshare';
 import { setConfirmationMessage } from 'store/slices/notifications';
 import { FileInfo } from 'types/homehare';
 import { TableAction, TableColumn, TODO } from 'types/types';
+import { Controls } from './styles';
 
 const extToIcon = (ext: string) => {
   switch (ext) {
@@ -187,9 +188,7 @@ const HomeShare = () => {
         >
           <Download />
         </IconButton>
-          
       }
-  
     }
   ];
 
@@ -209,16 +208,16 @@ const HomeShare = () => {
   const currentDirectory = path.split('/').pop();
 
   const breadCrumbLinks = path
-  .split('/')
-  .slice(0, -1)
-  .filter(Boolean)
-  .map((_, index: number, arr: string[]) => {
-    const linkPath = [''].concat(arr.slice(0, index + 1)).join('/');
-    return {
-      text: arr[index],
-      href: `/?path=${linkPath}`
-    };
-  });
+    .split('/')
+    .slice(0, -1)
+    .filter(Boolean)
+    .map((_, index: number, arr: string[]) => {
+      const linkPath = [''].concat(arr.slice(0, index + 1)).join('/');
+      return {
+        text: arr[index],
+        href: `/?path=${linkPath}`
+      };
+    });
 
   return (
     <>
@@ -229,29 +228,42 @@ const HomeShare = () => {
           ...breadCrumbLinks
         ]}
       />
-      <div>
-        <IconButton onClick={() => setIsNameDialogOpen(true)}>
-          <CreateNewFolder />
-        </IconButton>
-        <IconButton onClick={() => alert('Upload file')}>
-          <Upload />
-        </IconButton>
-        <ToggleButtonGroup value={view} exclusive onChange={(_event, value) => setView(value)}>
-          <ToggleButton value="table">
-            <TableRows />
-          </ToggleButton>
-          <ToggleButton value="grid">
-            <Window />
-          </ToggleButton>
-        </ToggleButtonGroup>
-      </div>
-      <Table
+      <Controls>
+        <div>
+          <Tooltip title="Create Folder">
+            <IconButton onClick={() => setIsNameDialogOpen(true)}>
+              <CreateNewFolder />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Upload File(s)">
+            <IconButton onClick={() => alert('Upload file')}>
+              <Upload />
+            </IconButton>
+        </Tooltip>
+        </div>
+        <div>
+          <ToggleButtonGroup value={view} exclusive onChange={(_event, value) => setView(value)}>
+            <Tooltip title="Table Layout">
+              <ToggleButton value="table">
+                <TableRows />
+              </ToggleButton>
+          </Tooltip>
+            <Tooltip title="Grid Layout">
+              <ToggleButton value="grid">
+                <Window />
+              </ToggleButton>
+            </Tooltip>
+          </ToggleButtonGroup>
+        </div>
+      </Controls>
+      {view === 'table' && <Table
         data={items ?? []}
         columns={columns}
         actions={actions}
         pagination={false}
         idField="path"
-      />
+      />}
+      {view === 'grid' && <div>Grid View (TODO)</div>}
       <Dialog
         isOpen={Boolean(isNameDialogOpen)}
         onClose={() => setIsNameDialogOpen(false)}
