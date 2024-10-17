@@ -17,7 +17,7 @@ import { Dialog, Form, PageHeader, Table } from 'components';
 import dayjs from 'dayjs';
 import { useHomeShare } from 'hooks';
 import { useEffect, useState } from 'react';
-import { set, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useSearchParams } from 'react-router-dom';
 import { setPath } from 'store/slices/homeshare';
@@ -69,8 +69,19 @@ const HomeShare = () => {
   const [searchParams] = useSearchParams();
   const pathParam = searchParams.get('path') ?? '/';
   const [view, setView] = useState<'table' | 'grid'>('table');
+
+  const [isUploadDialogOpen, setIsUploadDialogOpen] = useState<boolean>(false);
   const [isNameDialogOpen, setIsNameDialogOpen] = useState<boolean | FileInfo>(false);
-  const {register, handleSubmit, reset} = useForm();
+  const {
+    register: registerName, 
+    handleSubmit: handleSubmitName, 
+    reset: resetNameDialog,
+  } = useForm();
+  const {
+    register: registerUpload,
+    handleSubmit: handleSubmitUpload,
+    reset: resetUploadDialog,
+  } = useForm();
 
   const homeshare = useSelector((state: TODO) => state.homeshare);
   const { path, items } = homeshare;
@@ -91,9 +102,9 @@ const HomeShare = () => {
 
   useEffect(() => {
     if (!isNameDialogOpen) {
-      reset();
+      resetNameDialog();
     }
-  }, [isNameDialogOpen, reset]);
+  }, [isNameDialogOpen, resetNameDialog]);
 
   const handleClickDelete = (row: FileInfo) => {
     dispatch(
@@ -236,7 +247,7 @@ const HomeShare = () => {
             </IconButton>
           </Tooltip>
           <Tooltip title="Upload File(s)">
-            <IconButton onClick={() => alert('Upload file')}>
+            <IconButton onClick={() => setIsUploadDialogOpen(true)}>
               <Upload />
             </IconButton>
         </Tooltip>
@@ -265,6 +276,39 @@ const HomeShare = () => {
       />}
       {view === 'grid' && <div>Grid View (TODO)</div>}
       <Dialog
+        isOpen={isUploadDialogOpen}
+        onClose={() => setIsUploadDialogOpen(false)}
+        title={`Upload File(s) to ${path}`}
+        buttons={<>
+          <Button
+            variant="contained"
+            onClick={() => {
+              setIsUploadDialogOpen(false);
+            }}
+          >
+            Upload
+          </Button>
+          <Button
+            onClick={() => {
+              setIsUploadDialogOpen(false);
+            }}
+          >
+            Close
+          </Button>
+        </>}
+      >
+        <Form>
+          <Button variant="contained" component="label">
+            Upload File(s)
+            <input
+              type="file"
+              hidden
+              {...registerUpload('file', { required: true })}
+            />
+          </Button>
+        </Form>
+      </Dialog>
+      <Dialog
         isOpen={Boolean(isNameDialogOpen)}
         onClose={() => setIsNameDialogOpen(false)}
         title={isNameDialogOpen === true ? `Add Directory to ${path}` : `Rename "${isNameDialogOpen.name}"`}
@@ -286,11 +330,11 @@ const HomeShare = () => {
           </Button>
         </>}
       >
-        <Form onSubmit={handleSubmit(submitNameDialog)}>
+        <Form onSubmit={handleSubmitName(submitNameDialog)}>
           <TextField
             label="Name"
             fullWidth
-            {...register('name', { required: true })}
+            {...registerName('name', { required: true })}
             autoFocus
           />
         </Form>
