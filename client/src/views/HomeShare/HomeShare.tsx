@@ -124,7 +124,7 @@ const HomeShare = () => {
         </div>
       </Controls>
       {view === 'table' && <Table items={items ?? []} />}
-      {view === 'grid' && <Grid />}
+      {view === 'grid' && <Grid items={items ?? []}/>}
       <Dialog
         isOpen={isUploadDialogOpen}
         onClose={() => setIsUploadDialogOpen(false)}
