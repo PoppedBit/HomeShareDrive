@@ -314,3 +314,13 @@ func (h *Handler) DownloadFileHandler(w http.ResponseWriter, r *http.Request) {
 
 	http.ServeFile(w, r, filePath)
 }
+
+// @Router /upload-file [post]
+// @Tags homeshare
+// @Summary Upload File
+// @Description Upload a file
+// @Accept ???
+// @Produce ???
+func (h *Handler) UploadFileHandler(w http.ResponseWriter, r *http.Request) {
+	// TODO
+}

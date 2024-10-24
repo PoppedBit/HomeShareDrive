@@ -279,6 +279,7 @@ const HomeShare = () => {
         isOpen={isUploadDialogOpen}
         onClose={() => setIsUploadDialogOpen(false)}
         title={`Upload File(s) to ${path}`}
+        maxWidth='sm'
         buttons={<>
           <Button
             variant="contained"
