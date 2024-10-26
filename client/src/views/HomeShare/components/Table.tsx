@@ -1,4 +1,4 @@
-import { Code, Download, Folder, FolderZip, Headphones, Image, PictureAsPdf, ThreeDRotation } from '@mui/icons-material';
+import { Download, Folder } from '@mui/icons-material';
 import { Checkbox, IconButton, Typography } from '@mui/material';
 import { Table as SharedTable } from 'components';
 import dayjs from 'dayjs';
@@ -8,44 +8,7 @@ import { Link } from 'react-router-dom';
 import { setConfirmationMessage } from 'store/slices/notifications';
 import { FileInfo } from 'types/homehare';
 import { TableAction, TableColumn } from 'types/types';
-
-const formatBytes = (bytes: number) => {
-  const units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB'];
-  if (bytes === 0) return '0B';
-  const i = Math.floor(Math.log(bytes) / Math.log(1024));
-  const readableSize = (bytes / Math.pow(1024, i)).toFixed(2);
-  return `${readableSize}${units[i]}`;
-};
-
-const extToIcon = (ext: string) => {
-  switch (ext) {
-    case 'pdf':
-      return <PictureAsPdf />;
-    case 'jpg':
-    case 'jpeg':
-    case 'png':
-    case 'ico':
-      return <Image />;
-    case 'zip':
-    case 'tar':
-    case 'gz':
-      return <FolderZip />;
-    case 'mp3':
-    case 'wav':
-      return <Headphones />;
-    case 'stl':
-      return <ThreeDRotation />;
-    case 'ts':
-    case 'js':
-    case 'tsx':
-    case 'jsx':
-    case 'html':
-    case 'css':
-      return <Code />;
-    default:
-      return <Typography>{ext}</Typography>;
-  }
-};
+import { extToIcon, formatBytes } from '../util';
 
 interface Props {
   items: FileInfo[];
