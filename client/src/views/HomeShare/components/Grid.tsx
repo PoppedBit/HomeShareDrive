@@ -1,10 +1,12 @@
-import { ArrowForward, Delete, Download, DriveFileRenameOutline, Folder, FolderOutlined, Preview } from "@mui/icons-material";
-import { Card, CardActions, CardHeader, CardMedia, IconButton, Tooltip, Typography } from "@mui/material";
+import { ArrowForward, Delete, Download, DriveFileRenameOutline, Folder, FolderOutlined } from "@mui/icons-material";
+import { Button, Card, CardActions, CardHeader, CardMedia, IconButton, Tooltip, Typography } from "@mui/material";
 import { Link } from "react-router-dom";
 import { FileInfo } from "types/homehare";
-import { GridCardMedia, GridCardMediaContents, GridContainer, PreviewMask } from "../styles";
-import { extToIcon, formatBytes } from '../util';
+import { GridCardMedia, GridCardMediaContents, GridContainer, PreviewImageButtonContainer, PreviewMask } from "../styles";
+import { extToIcon, formatBytes, IMAGE_EXTENSIONS } from '../util';
 import { formatTimestamp } from "utils";
+import { useState } from "react";
+import { Dialog } from "components";
 
 interface Props {
   items: FileInfo[];
@@ -13,12 +15,28 @@ interface Props {
 const Grid = (props: Props) => {
   const { items } = props;
 
+  const [isPreviewOpen, setIsPreviewOpen] = useState<FileInfo | undefined>(undefined);
+
+  const imageFiles = items
+    .filter(file => IMAGE_EXTENSIONS.includes(file.name.split('.').pop() ?? ''))
+
+  let previewImageIndex = -1;
+  if(Boolean(isPreviewOpen)){
+    previewImageIndex = imageFiles.indexOf(isPreviewOpen!);
+  }
+
+  const handlePreviewNavigationClick = (change: number) => {
+    const newPreviewFile = imageFiles[(previewImageIndex + change) % imageFiles.length];
+    setIsPreviewOpen(newPreviewFile);
+  }
+
   return (
     <GridContainer>
       {items.map((item) => {
         const { name, path, size, modTime, isDir } = item;
 
         const fileExt = name.split('.').pop();
+        const isImage = IMAGE_EXTENSIONS.includes(fileExt ?? '');
 
         return (
           <Card key={path}>
@@ -43,16 +61,19 @@ const Grid = (props: Props) => {
                 </Tooltip>}
             />
             <GridCardMedia
-              image={isDir ? '/folder.png' : `/api/download-file?path=${path}`}
+              image={isImage ? `/api/download-file?path=${path}` : undefined}
               onClick={() => {
-                alert("TODO");
+                if(!isImage) {
+                  return;
+                }
+                setIsPreviewOpen(item);
               }}
             >
               <GridCardMediaContents>
                 {isDir && (
                   <FolderOutlined />
                 )}
-                {!isDir && (
+                {isImage && (
                   <PreviewMask>
                     Preview
                   </PreviewMask>
@@ -82,6 +103,39 @@ const Grid = (props: Props) => {
           </Card>
         );
       })}
+      {Boolean(isPreviewOpen) && <Dialog
+        isOpen={Boolean(isPreviewOpen)}
+        onClose={() => setIsPreviewOpen(undefined)}
+        title={<>
+          {isPreviewOpen?.name}
+          <Tooltip title="Download" placement="top">
+            <IconButton
+              href={`/api/download-file?path=${isPreviewOpen?.path}`}
+              download={isPreviewOpen?.name}
+            >
+              <Download />
+            </IconButton>
+          </Tooltip>
+        </>}
+        maxWidth='sm'
+        buttons={<PreviewImageButtonContainer>
+          <Button
+            variant="contained"
+            onClick={() => handlePreviewNavigationClick(-1)}
+          >Previous</Button>
+          <Typography>{previewImageIndex + 1} / {imageFiles.length}</Typography>
+          <Button
+            variant="contained"
+            onClick={() => handlePreviewNavigationClick(1)}
+          >Next</Button>
+        </PreviewImageButtonContainer>}
+      >
+        <CardMedia
+          component='img'
+          src={`/api/download-file?path=${isPreviewOpen?.path}`}
+          alt={isPreviewOpen?.name}
+        />
+      </Dialog>}
     </GridContainer>
   );
 };

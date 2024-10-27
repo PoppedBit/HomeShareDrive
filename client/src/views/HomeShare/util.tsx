@@ -1,6 +1,8 @@
 import { Code, FolderZip, Headphones, Image, PictureAsPdf, ThreeDRotation } from '@mui/icons-material';
 import { Typography } from '@mui/material';
 
+export const IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'ico'];
+
 export const formatBytes = (bytes: number) => {
   const units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB'];
   if (bytes === 0) return '0B';

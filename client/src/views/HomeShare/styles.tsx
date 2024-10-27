@@ -38,3 +38,9 @@ export const PreviewMask = styled('div')({
     color: '#FFFFFF'
   },
 });
+
+export const PreviewImageButtonContainer = styled('div')({
+  display: 'flex',
+  justifyContent: 'space-between',
+  width: '100%'
+});

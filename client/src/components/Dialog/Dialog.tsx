@@ -10,7 +10,7 @@ import { ReactNode } from 'react';
 interface Props {
   isOpen: boolean;
   onClose: Function;
-  title?: string;
+  title?: string | ReactNode;
   children?: ReactNode;
   buttons?: ReactNode;
   maxWidth?: Breakpoint;
