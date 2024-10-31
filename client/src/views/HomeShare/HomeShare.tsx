@@ -59,10 +59,13 @@ const HomeShare = () => {
     }
   }, [isNameDialogOpen, resetNameDialog]);
 
-  const submitNameDialog = ({name}: {name: string}) => {
+  const submitNameDialog = (data: TODO) => {
     if (!isNameDialogOpen) {
       return;
     }
+
+    let { name } = data;
+    name = name.trim();
 
     if (isNameDialogOpen === true) {
       addDirectory(path, name);
@@ -150,7 +153,7 @@ const HomeShare = () => {
       >
         <Form>
           <Button variant="contained" component="label">
-            Upload File(s)
+            Attach File(s)
             <input
               type="file"
               hidden
@@ -167,7 +170,7 @@ const HomeShare = () => {
           <Button
             variant="contained"
             onClick={() => {
-              handleSubmit(submitNameDialog)();
+              handleSubmitName(submitNameDialog)();
             }}
           >
             Submit
