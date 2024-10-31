@@ -73,7 +73,7 @@ func (h *Handler) DirectoryContentsHandler(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	var fileInfos []FileInfo
+	var fileInfos []FileInfo = make([]FileInfo, len(files))
 	for _, file := range files {
 		info, err := file.Info()
 		if err != nil {

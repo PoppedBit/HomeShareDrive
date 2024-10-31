@@ -32,9 +32,13 @@ const HomeShare = () => {
   } = useForm();
   const {
     register: registerUpload,
+    watch: watchUpload,
+    setValue: setUploadValue,
     handleSubmit: handleSubmitUpload,
     reset: resetUploadDialog,
   } = useForm();
+
+  let attachedFiles: FileList | undefined = watchUpload('files');
 
   const homeshare = useSelector((state: TODO) => state.homeshare);
   const { path, items } = homeshare;
@@ -58,6 +62,12 @@ const HomeShare = () => {
       resetNameDialog();
     }
   }, [isNameDialogOpen, resetNameDialog]);
+
+  useEffect(() => {
+    if (!isUploadDialogOpen) {
+      resetUploadDialog();
+    }
+  }, [isUploadDialogOpen, resetUploadDialog]);
 
   const submitNameDialog = (data: TODO) => {
     if (!isNameDialogOpen) {
@@ -136,8 +146,9 @@ const HomeShare = () => {
         buttons={<>
           <Button
             variant="contained"
+            disabled={!attachedFiles?.length}
             onClick={() => {
-              setIsUploadDialogOpen(false);
+              alert("Ready to submit");
             }}
           >
             Upload
@@ -157,9 +168,17 @@ const HomeShare = () => {
             <input
               type="file"
               hidden
-              {...registerUpload('file', { required: true })}
+              multiple
+              {...registerUpload('files', { required: true })}
             />
           </Button>
+          {attachedFiles && attachedFiles.length !== 0 && (
+            <ul>
+              {Array.from(attachedFiles).map((file, index) => (
+                <li key={index}>{file.name}</li>
+              ))}
+            </ul> 
+          )}
         </Form>
       </Dialog>
       <Dialog
