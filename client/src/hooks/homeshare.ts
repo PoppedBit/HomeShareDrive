@@ -1,5 +1,12 @@
-import { requestCreateDirectory, requestDeleteItem, requestDirectoryContents, requestRenameItem, requestUploadFile } from 'api';
+import {
+  requestCreateDirectory,
+  requestDeleteItem,
+  requestDirectoryContents,
+  requestRenameItem,
+  requestUploadFile
+} from 'api';
 import { useState } from 'react';
+import { set } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
 import { removeItem, setItems } from 'store/slices/homeshare';
 import { setErrorMessage, setSuccessMessage } from 'store/slices/notifications';
@@ -7,6 +14,7 @@ import { setErrorMessage, setSuccessMessage } from 'store/slices/notifications';
 export const useHomeShare = () => {
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [uploadProgress, setUploadProgress] = useState<number>(0);
 
   const getDirectoryContents = async (path: string) => {
     setIsLoading(true);
@@ -48,13 +56,12 @@ export const useHomeShare = () => {
     } finally {
       setIsLoading(false);
     }
-  }
+  };
 
-  const uploadFiles = async (path: string, files: FileList) => {
+  const uploadFiles = async (path: string, files: FileList, onComplete: () => void) => {
     setIsLoading(true);
 
     try {
-
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
         const response = await requestUploadFile(path, file);
@@ -63,24 +70,27 @@ export const useHomeShare = () => {
           // TODO
           alert('Error uploading file');
         }
+        setUploadProgress(i + 1);
       }
 
       dispatch(setSuccessMessage(`${files.length} files uploaded`));
       getDirectoryContents(path);
 
+      onComplete();
     } catch (e) {
       console.log(e);
       dispatch(setErrorMessage('An unexpected error occured'));
     } finally {
+      setUploadProgress(0);
       setIsLoading(false);
     }
-  }
+  };
 
-  const renameItem = async (path: string, oldName: string,  newName: string) => {
+  const renameItem = async (path: string, oldName: string, newName: string) => {
     setIsLoading(true);
 
     try {
-      const response = await requestRenameItem(path+"/"+oldName, newName);
+      const response = await requestRenameItem(path + '/' + oldName, newName);
 
       if (response.status === 200) {
         dispatch(setSuccessMessage(`"${oldName}" renamed to "${newName}"`));
@@ -95,7 +105,7 @@ export const useHomeShare = () => {
     } finally {
       setIsLoading(false);
     }
-  }
+  };
 
   const deleteItem = async (path: string) => {
     setIsLoading(true);
@@ -120,6 +130,7 @@ export const useHomeShare = () => {
 
   return {
     isLoading,
+    uploadProgress,
     getDirectoryContents,
     addDirectory,
     uploadFiles,

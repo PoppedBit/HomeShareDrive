@@ -1,4 +1,11 @@
-import { Code, FolderZip, Headphones, Image, PictureAsPdf, ThreeDRotation } from '@mui/icons-material';
+import {
+  Code,
+  FolderZip,
+  Headphones,
+  Image,
+  PictureAsPdf,
+  ThreeDRotation
+} from '@mui/icons-material';
 import { Typography } from '@mui/material';
 
 export const IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'ico'];

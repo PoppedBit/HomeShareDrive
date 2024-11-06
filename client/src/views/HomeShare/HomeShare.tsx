@@ -1,10 +1,12 @@
+import { CreateNewFolder, TableRows, Upload, Window } from '@mui/icons-material';
 import {
-  CreateNewFolder,
-  TableRows,
-  Upload,
-  Window
-} from '@mui/icons-material';
-import { Button, IconButton, TextField, ToggleButton, ToggleButtonGroup, Tooltip } from '@mui/material';
+  Button,
+  IconButton,
+  TextField,
+  ToggleButton,
+  ToggleButtonGroup,
+  Tooltip
+} from '@mui/material';
 import { Dialog, Form, PageHeader } from 'components';
 import { useHomeShare } from 'hooks';
 import { useEffect, useState } from 'react';
@@ -26,24 +28,25 @@ const HomeShare = () => {
   const [isUploadDialogOpen, setIsUploadDialogOpen] = useState<boolean>(false);
   const [isNameDialogOpen, setIsNameDialogOpen] = useState<boolean | FileInfo>(false);
   const {
-    register: registerName, 
-    handleSubmit: handleSubmitName, 
-    reset: resetNameDialog,
+    register: registerName,
+    handleSubmit: handleSubmitName,
+    reset: resetNameDialog
   } = useForm();
   const {
     register: registerUpload,
     watch: watchUpload,
     setValue: setUploadValue,
     handleSubmit: handleSubmitUpload,
-    reset: resetUploadDialog,
+    reset: resetUploadDialog
   } = useForm();
 
-  let attachedFiles: FileList | undefined = watchUpload('files');
+  const attachedFiles: FileList | undefined = watchUpload('files');
 
   const homeshare = useSelector((state: TODO) => state.homeshare);
   const { path, items } = homeshare;
 
-  const { isLoading, getDirectoryContents, addDirectory, uploadFiles, renameItem } = useHomeShare();
+  const { isLoading, uploadProgress, getDirectoryContents, addDirectory, uploadFiles, renameItem } =
+    useHomeShare();
 
   const isRoot = path === '/';
 
@@ -83,18 +86,20 @@ const HomeShare = () => {
       renameItem(path, isNameDialogOpen.name, name);
     }
     setIsNameDialogOpen(false);
-  }
+  };
 
   const submitUploadDialog = (data: TODO) => {
     console.log(data);
     const { files } = data;
 
-    if(files.length === 0) {
+    if (files.length === 0) {
       return;
     }
 
-    uploadFiles(path, files);
-  }
+    uploadFiles(path, files, () => {
+      setIsUploadDialogOpen(false);
+    });
+  };
 
   const currentDirectory = path.split('/').pop();
 
@@ -114,10 +119,7 @@ const HomeShare = () => {
     <>
       <PageHeader
         text={currentDirectory.length ? currentDirectory : 'Home'}
-        links={[
-          ...(isRoot ? [] : [{ text: 'Home', href: '/' }]),
-          ...breadCrumbLinks
-        ]}
+        links={[...(isRoot ? [] : [{ text: 'Home', href: '/' }]), ...breadCrumbLinks]}
       />
       <Controls>
         <div>
@@ -130,7 +132,7 @@ const HomeShare = () => {
             <IconButton onClick={() => setIsUploadDialogOpen(true)}>
               <Upload />
             </IconButton>
-        </Tooltip>
+          </Tooltip>
         </div>
         <div>
           <ToggleButtonGroup value={view} exclusive onChange={(_event, value) => setView(value)}>
@@ -138,7 +140,7 @@ const HomeShare = () => {
               <ToggleButton value="table">
                 <TableRows />
               </ToggleButton>
-          </Tooltip>
+            </Tooltip>
             <Tooltip title="Grid Layout">
               <ToggleButton value="grid">
                 <Window />
@@ -148,71 +150,74 @@ const HomeShare = () => {
         </div>
       </Controls>
       {view === 'table' && <Table items={items ?? []} />}
-      {view === 'grid' && <Grid items={items ?? []}/>}
+      {view === 'grid' && <Grid items={items ?? []} />}
       <Dialog
         isOpen={isUploadDialogOpen}
         onClose={() => setIsUploadDialogOpen(false)}
         title={`Upload File(s) to ${path}`}
-        maxWidth='sm'
-        buttons={<>
-          <Button
-            variant="contained"
-            disabled={!attachedFiles?.length}
-            onClick={() => {
-              handleSubmitUpload(submitUploadDialog)();
-            }}
-          >
-            Upload
-          </Button>
-          <Button
-            onClick={() => {
-              setIsUploadDialogOpen(false);
-            }}
-          >
-            Close
-          </Button>
-        </>}
+        maxWidth="sm"
+        buttons={
+          <>
+            <Button
+              variant="contained"
+              disabled={!attachedFiles?.length}
+              onClick={() => {
+                handleSubmitUpload(submitUploadDialog)();
+              }}
+            >
+              Upload
+            </Button>
+            <Button
+              onClick={() => {
+                setIsUploadDialogOpen(false);
+              }}
+            >
+              Close
+            </Button>
+          </>
+        }
       >
         <Form onSubmit={handleSubmitUpload(submitUploadDialog)}>
           <Button variant="contained" component="label">
             Attach File(s)
-            <input
-              type="file"
-              hidden
-              multiple
-              {...registerUpload('files', { required: true })}
-            />
+            <input type="file" hidden multiple {...registerUpload('files', { required: true })} />
           </Button>
           {attachedFiles && attachedFiles.length !== 0 && (
             <ul>
               {Array.from(attachedFiles).map((file, index) => (
                 <li key={index}>{file.name}</li>
               ))}
-            </ul> 
+            </ul>
           )}
         </Form>
       </Dialog>
       <Dialog
         isOpen={Boolean(isNameDialogOpen)}
         onClose={() => setIsNameDialogOpen(false)}
-        title={isNameDialogOpen === true ? `Add Directory to ${path}` : `Rename "${isNameDialogOpen.name}"`}
-        buttons={<>
-          <Button
-            variant="contained"
-            onClick={() => {
-              handleSubmitName(submitNameDialog)();
-            }}
-          >
-            Submit
-          </Button>
-          <Button
-            onClick={() => {
-              setIsNameDialogOpen(false);
-            }}
-          >
-            Cancel
-          </Button>
-        </>}
+        title={
+          isNameDialogOpen === true
+            ? `Add Directory to ${path}`
+            : `Rename "${isNameDialogOpen.name}"`
+        }
+        buttons={
+          <>
+            <Button
+              variant="contained"
+              onClick={() => {
+                handleSubmitName(submitNameDialog)();
+              }}
+            >
+              Submit
+            </Button>
+            <Button
+              onClick={() => {
+                setIsNameDialogOpen(false);
+              }}
+            >
+              Cancel
+            </Button>
+          </>
+        }
       >
         <Form onSubmit={handleSubmitName(submitNameDialog)}>
           <TextField

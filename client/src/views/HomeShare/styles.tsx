@@ -1,20 +1,20 @@
-import { Box, CardMedia } from "@mui/material";
-import styled from "styled-components";
+import { Box, CardMedia } from '@mui/material';
+import styled from 'styled-components';
 
 export const Controls = styled('div')({
   display: 'flex',
-  justifyContent: 'space-between',
+  justifyContent: 'space-between'
 });
 
 export const GridContainer = styled('div')({
   display: 'grid',
   gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
-  gap: '1rem',
+  gap: '1rem'
 });
 
 export const GridCardMedia = styled(CardMedia)({
   height: '15rem',
-  cursor: 'pointer',
+  cursor: 'pointer'
 });
 
 export const GridCardMediaContents = styled(Box)({
@@ -22,7 +22,7 @@ export const GridCardMediaContents = styled(Box)({
   alignItems: 'center',
   justifyContent: 'center',
   width: '100%',
-  height: '100%',
+  height: '100%'
 });
 
 export const PreviewMask = styled('div')({
@@ -36,7 +36,7 @@ export const PreviewMask = styled('div')({
   '&:hover': {
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
     color: '#FFFFFF'
-  },
+  }
 });
 
 export const PreviewImageButtonContainer = styled('div')({

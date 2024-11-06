@@ -86,20 +86,20 @@ const Table = (props: Props) => {
         const parsedDate = dayjs(value, 'YYYY-MM-DD HH:mm:ss.SSSSSSSSS Z');
         return parsedDate.format('YYYY-MM-DD HH:mm:ss');
       }
-    },{
+    },
+    {
       dataIndex: 'path',
       label: 'Download',
       render: (value: string, row: FileInfo) => {
-        if(row.isDir){
+        if (row.isDir) {
           return <></>;
         }
 
-        return <IconButton
-          href={`/api/download-file?path=${value}`}
-          download={row.name}
-        >
-          <Download />
-        </IconButton>
+        return (
+          <IconButton href={`/api/download-file?path=${value}`} download={row.name}>
+            <Download />
+          </IconButton>
+        );
       }
     }
   ];
