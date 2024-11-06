@@ -74,35 +74,40 @@ func (h *Handler) DirectoryContentsHandler(w http.ResponseWriter, r *http.Reques
 	}
 
 	var fileInfos []FileInfo = make([]FileInfo, len(files))
-	for _, file := range files {
+	for index, file := range files {
 		info, err := file.Info()
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 
+		fileName := file.Name()
+
 		filePath := path
 		if path != PathDelimiter {
 			filePath += PathDelimiter
 		}
-		filePath += file.Name()
+
+		filePath += fileName
 
 		fileInfo := FileInfo{
-			Name:    file.Name(),
+			Name:    fileName,
 			Path:    filePath,
 			Size:    info.Size(),
 			ModTime: info.ModTime().String(),
 			IsDir:   info.IsDir(),
 		}
 
-		fileInfos = append(fileInfos, fileInfo)
+		fileInfos[index] = fileInfo
 	}
 
 	// Order by directories first, then files
-	for i := 0; i < len(fileInfos); i++ {
-		for j := i + 1; j < len(fileInfos); j++ {
-			if !fileInfos[i].IsDir && fileInfos[j].IsDir {
-				fileInfos[i], fileInfos[j] = fileInfos[j], fileInfos[i]
+	if len(fileInfos) > 1 {
+		for i := 0; i < len(fileInfos); i++ {
+			for j := i + 1; j < len(fileInfos); j++ {
+				if !fileInfos[i].IsDir && fileInfos[j].IsDir {
+					fileInfos[i], fileInfos[j] = fileInfos[j], fileInfos[i]
+				}
 			}
 		}
 	}
