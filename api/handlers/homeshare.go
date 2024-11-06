@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"io"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -327,5 +328,42 @@ func (h *Handler) DownloadFileHandler(w http.ResponseWriter, r *http.Request) {
 // @Accept ???
 // @Produce ???
 func (h *Handler) UploadFileHandler(w http.ResponseWriter, r *http.Request) {
-	// TODO
+	isAuthorized := CheckCanHomeshare(h, r)
+	if !isAuthorized {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	path := r.URL.Query().Get("path")
+
+	// Request has formdata
+	err := r.ParseMultipartForm(10 << 20) // 10 MB
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	file, handler, err := r.FormFile("file")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	defer file.Close()
+
+	filePath := os.Getenv("HOME_SHARE_ROOT") + path + PathDelimiter + handler.Filename
+
+	newFile, err := os.Create(filePath)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	defer newFile.Close()
+
+	_, err = io.Copy(newFile, file)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusCreated)
 }

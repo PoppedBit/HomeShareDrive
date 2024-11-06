@@ -43,7 +43,7 @@ const HomeShare = () => {
   const homeshare = useSelector((state: TODO) => state.homeshare);
   const { path, items } = homeshare;
 
-  const { isLoading, getDirectoryContents, addDirectory, renameItem } = useHomeShare();
+  const { isLoading, getDirectoryContents, addDirectory, uploadFiles, renameItem } = useHomeShare();
 
   const isRoot = path === '/';
 
@@ -83,6 +83,17 @@ const HomeShare = () => {
       renameItem(path, isNameDialogOpen.name, name);
     }
     setIsNameDialogOpen(false);
+  }
+
+  const submitUploadDialog = (data: TODO) => {
+    console.log(data);
+    const { files } = data;
+
+    if(files.length === 0) {
+      return;
+    }
+
+    uploadFiles(path, files);
   }
 
   const currentDirectory = path.split('/').pop();
@@ -148,7 +159,7 @@ const HomeShare = () => {
             variant="contained"
             disabled={!attachedFiles?.length}
             onClick={() => {
-              alert("Ready to submit");
+              handleSubmitUpload(submitUploadDialog)();
             }}
           >
             Upload
@@ -162,7 +173,7 @@ const HomeShare = () => {
           </Button>
         </>}
       >
-        <Form>
+        <Form onSubmit={handleSubmitUpload(submitUploadDialog)}>
           <Button variant="contained" component="label">
             Attach File(s)
             <input

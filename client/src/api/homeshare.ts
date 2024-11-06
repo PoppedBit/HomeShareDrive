@@ -14,6 +14,16 @@ export const requestCreateDirectory = async (path: string, name: string) => {
   return await fetch(`${baseUrl}/create-directory`, config);
 };
 
+export const requestUploadFile = async (path: string, file: File) => {
+  const data = new FormData();
+  data.append('file', file);
+  const config = {
+    method: 'POST',
+    body: data
+  };
+  return await fetch(`${baseUrl}/upload-file?path=${path}`, config);
+};
+
 export const requestDeleteItem = async (path: string) => {
   const data = {
     path

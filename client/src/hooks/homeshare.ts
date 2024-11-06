@@ -1,4 +1,4 @@
-import { requestCreateDirectory, requestDeleteItem, requestDirectoryContents, requestRenameItem } from 'api';
+import { requestCreateDirectory, requestDeleteItem, requestDirectoryContents, requestRenameItem, requestUploadFile } from 'api';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { removeItem, setItems } from 'store/slices/homeshare';
@@ -42,6 +42,32 @@ export const useHomeShare = () => {
         const error = await response.text();
         dispatch(setErrorMessage(error));
       }
+    } catch (e) {
+      console.log(e);
+      dispatch(setErrorMessage('An unexpected error occured'));
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  const uploadFiles = async (path: string, files: FileList) => {
+    setIsLoading(true);
+
+    try {
+
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const response = await requestUploadFile(path, file);
+
+        if (response.status !== 201) {
+          // TODO
+          alert('Error uploading file');
+        }
+      }
+
+      dispatch(setSuccessMessage(`${files.length} files uploaded`));
+      getDirectoryContents(path);
+
     } catch (e) {
       console.log(e);
       dispatch(setErrorMessage('An unexpected error occured'));
@@ -96,6 +122,7 @@ export const useHomeShare = () => {
     isLoading,
     getDirectoryContents,
     addDirectory,
+    uploadFiles,
     renameItem,
     deleteItem
   };
