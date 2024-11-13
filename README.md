@@ -7,3 +7,15 @@
 `go install github.com/swaggo/swag/cmd/swag@latest`
 
 `swag init`
+
+## Deployment
+
+### Build and Run?
+
+sudo docker-compose up --build
+
+sudo docker-compose down -v --remove-orphans
+
+
+
+

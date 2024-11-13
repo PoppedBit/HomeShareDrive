@@ -1,0 +1,29 @@
+version: '3'
+services:
+  backend:
+    build:
+      context: .
+    ports:
+      - "8080:8080"
+    env_file:
+      - api/.env.docker
+    depends_on:
+      - db
+    networks:
+      - app-network
+
+  db:
+    image: mysql:8
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: homeshare
+      MYSQL_USER: homeshare_user
+      MYSQL_PASSWORD: password
+    ports:
+      - "3307:3306"
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
