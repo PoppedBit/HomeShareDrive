@@ -10,7 +10,7 @@
 
 ## Deployment
 
-### Build and Run?
+### Docker - Build and Run
 
 sudo docker-compose up --build
 

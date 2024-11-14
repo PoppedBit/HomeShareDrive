@@ -117,7 +117,7 @@ const App = () => {
   }
 
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={import.meta.env.VITE_BASE_URL}>
       <ThemeProvider theme={theme}>
         <Header />
         <Container maxWidth="xl" sx={{ paddingTop: '2rem', paddingBottom: '4rem' }}>

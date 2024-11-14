@@ -107,7 +107,7 @@ const Table = (props: Props) => {
   const actions: TableAction[] = [
     {
       label: 'Rename',
-      onClick: (row: FileInfo) => {
+      onClick: (_row: FileInfo) => {
         // setIsNameDialogOpen(row);
         alert('TODO');
       }

@@ -6,7 +6,6 @@ import {
   requestUploadFile
 } from 'api';
 import { useState } from 'react';
-import { set } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
 import { removeItem, setItems } from 'store/slices/homeshare';
 import { setErrorMessage, setSuccessMessage } from 'store/slices/notifications';

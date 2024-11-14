@@ -14,8 +14,8 @@ srcRootContent.forEach((directory) => {
   absolutePathAliases[directory] = path.join(srcPath, directory);
 });
 
-// https://vitejs.dev/config/
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
+  base: mode === 'production.docker' ? '/app/' : '/',
   server: {
     proxy: {
       '/api': {
@@ -31,4 +31,5 @@ export default defineConfig({
       ...absolutePathAliases
     }
   }
-});
+}));
+

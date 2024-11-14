@@ -22,7 +22,6 @@ import { TODO } from 'types/types';
 
 export const useLogin = () => {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   const handleSubmit = async (data: TODO) => {

@@ -35,7 +35,6 @@ const HomeShare = () => {
   const {
     register: registerUpload,
     watch: watchUpload,
-    setValue: setUploadValue,
     handleSubmit: handleSubmitUpload,
     reset: resetUploadDialog
   } = useForm();
@@ -45,7 +44,7 @@ const HomeShare = () => {
   const homeshare = useSelector((state: TODO) => state.homeshare);
   const { path, items } = homeshare;
 
-  const { isLoading, uploadProgress, getDirectoryContents, addDirectory, uploadFiles, renameItem } =
+  const { isLoading, getDirectoryContents, addDirectory, uploadFiles, renameItem } =
     useHomeShare();
 
   const isRoot = path === '/';
@@ -107,7 +106,7 @@ const HomeShare = () => {
     .split('/')
     .slice(0, -1)
     .filter(Boolean)
-    .map((_, index: number, arr: string[]) => {
+    .map((_: string, index: number, arr: string[]) => {
       const linkPath = [''].concat(arr.slice(0, index + 1)).join('/');
       return {
         text: arr[index],
@@ -197,7 +196,7 @@ const HomeShare = () => {
         title={
           isNameDialogOpen === true
             ? `Add Directory to ${path}`
-            : `Rename "${isNameDialogOpen.name}"`
+            : `Rename "${isNameDialogOpen !== false ? isNameDialogOpen.name : ''}"`
         }
         buttons={
           <>
