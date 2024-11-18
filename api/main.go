@@ -27,6 +27,12 @@ func main() {
 	// Session
 	cookieSecret := os.Getenv("COOKIE_SECRET")
 	cookieStore := sessions.NewCookieStore([]byte(cookieSecret))
+	cookieStore.Options = &sessions.Options{
+		Path:     "/",
+		MaxAge:   3600, // TODO figure out how long this is
+		HttpOnly: true,
+		SameSite: http.SameSiteLaxMode, // Adjust as needed
+	}
 
 	// Database
 	db := models.InitializeDB()

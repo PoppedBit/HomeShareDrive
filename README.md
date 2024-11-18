@@ -23,6 +23,22 @@ Dockerfile
 sudo docker-compose down --remove-orphans
 sudo docker-compose up --build
 
+### Network Accessibility
+
+#### Linux
+
+Allow traffic through firewall
+
+`sudo ufw allow 8080`
+
+Get IP Address
+
+`hostname -I`
+
+#### Windows
+
+`TODO`
+
 ### Debugging
 
 sudo docker-compose up --no-start
