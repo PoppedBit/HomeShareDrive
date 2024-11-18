@@ -8,13 +8,30 @@
 
 `swag init`
 
-## Deployment
+## Deployment Via Docker
 
-### Docker - Build and Run
+### Configuration
 
+docker-compose.yml
+
+Dockerfile
+
+.env.docker
+
+### Build and Run
+
+sudo docker-compose down --remove-orphans
 sudo docker-compose up --build
 
-sudo docker-compose down -v --remove-orphans
+### Debugging
+
+sudo docker-compose up --no-start
+sudo docker start homeshare
+sudo docker exec -it homeshare
+
+
+
+
 
 
 

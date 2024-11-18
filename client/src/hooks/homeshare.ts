@@ -27,6 +27,7 @@ export const useHomeShare = () => {
       } else {
         const error = await response.text();
         dispatch(setErrorMessage(error));
+        dispatch(setItems([]));
       }
     } catch (e) {
       console.log(e);

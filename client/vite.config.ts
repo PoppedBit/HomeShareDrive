@@ -15,7 +15,7 @@ srcRootContent.forEach((directory) => {
 });
 
 export default defineConfig(({ mode }) => ({
-  base: mode === 'production.docker' ? '/app/' : '/',
+  base: mode === 'production.docker' || 'production.local' ? '/app/' : '/',
   server: {
     proxy: {
       '/api': {

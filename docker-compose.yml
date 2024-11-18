@@ -3,8 +3,11 @@ services:
   backend:
     build:
       context: .
+    container_name: homeshare
     ports:
       - "8080:8080"
+    volumes:
+      - /home/poppedbit/homeshare:/mnt/homeshare
     env_file:
       - api/.env.docker
     depends_on:
@@ -23,6 +26,11 @@ services:
       - "3307:3306"
     networks:
       - app-network
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+volumes:
+  mysql_data:
 
 networks:
   app-network:

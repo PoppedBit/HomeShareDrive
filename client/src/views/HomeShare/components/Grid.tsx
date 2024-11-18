@@ -74,7 +74,7 @@ const Grid = (props: Props) => {
                   </IconButton>
                 ) : (
                   <Tooltip title="Download" placement="top">
-                    <IconButton href={`/api/download-file?path=${path}`} download={name}>
+                    <IconButton href={`${import.meta.env.VITE_API_URL}/download-file?path=${path}`} download={name}>
                       <Download />
                     </IconButton>
                   </Tooltip>
@@ -82,7 +82,7 @@ const Grid = (props: Props) => {
               }
             />
             <GridCardMedia
-              image={isImage ? `/api/download-file?path=${path}` : undefined}
+              image={isImage ? `${import.meta.env.VITE_API_URL}/download-file?path=${path}` : undefined}
               onClick={() => {
                 if (!isImage) {
                   return;
@@ -127,7 +127,7 @@ const Grid = (props: Props) => {
               {isPreviewOpen?.name}
               <Tooltip title="Download" placement="top">
                 <IconButton
-                  href={`/api/download-file?path=${isPreviewOpen?.path}`}
+                  href={`${import.meta.env.VITE_API_URL}/download-file?path=${isPreviewOpen?.path}`}
                   download={isPreviewOpen?.name}
                 >
                   <Download />
@@ -152,7 +152,7 @@ const Grid = (props: Props) => {
         >
           <CardMedia
             component="img"
-            src={`/api/download-file?path=${isPreviewOpen?.path}`}
+            src={`${import.meta.env.VITE_API_URL}/download-file?path=${isPreviewOpen?.path}`}
             alt={isPreviewOpen?.name}
           />
         </Dialog>

@@ -26,6 +26,9 @@ COPY --from=build /app/homeshare .
 # Copy the .env file from the build stage
 COPY api/.env.docker .env
 
+# Copy the pre-built React app's public directory
+COPY api/public /public
+
 # Expose the application’s port (adjust if not 8080)
 EXPOSE 8080
 

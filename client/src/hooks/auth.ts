@@ -55,10 +55,10 @@ export const useLogin = () => {
 };
 
 const unauthenticatedSession = {
-  ID: 0,
-  Username: '',
-  IsAdmin: false,
-  NameColor: ''
+  id: 0,
+  username: '',
+  isAdmin: false,
+  nameColor: ''
 };
 
 export const useCheckSession = () => {
@@ -75,8 +75,6 @@ export const useCheckSession = () => {
         const data = await response.json();
         dispatch(setUser(data));
       } else {
-        const error = await response.text();
-        dispatch(setErrorMessage(error));
         dispatch(setUser(unauthenticatedSession));
       }
     } catch (e) {

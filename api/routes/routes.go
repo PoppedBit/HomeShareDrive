@@ -14,4 +14,5 @@ func RegisterRoutes(r *mux.Router, handler *handlers.Handler) {
 	registerHomeShareRoutes(r, handler)
 
 	r.PathPrefix("/app").Handler(http.StripPrefix("/app", http.FileServer(http.Dir("public"))))
+
 }
