@@ -263,7 +263,6 @@ func (h *Handler) DeleteItemHandler(w http.ResponseWriter, r *http.Request) {
 		thumbnailPath := fileDir + PathDelimiter + ".thumbnails" + PathDelimiter + fileName
 
 		if _, err := os.Stat(thumbnailPath); err == nil {
-			println("deleting thumbnail")
 			err = os.Remove(thumbnailPath)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
