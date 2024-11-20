@@ -22,11 +22,12 @@ var imageExtensions = []string{".jpg", ".jpeg", ".png"}
 var thumbWidth = 300
 
 type FileInfo struct {
-	Name    string `json:"name"`
-	Path    string `json:"path"`
-	Size    int64  `json:"size"`
-	ModTime string `json:"modTime"`
-	IsDir   bool   `json:"isDir"`
+	Name          string `json:"name"`
+	Path          string `json:"path"`
+	ThumbnailPath string `json:"thumbnailPath"`
+	Size          int64  `json:"size"`
+	ModTime       string `json:"modTime"`
+	IsDir         bool   `json:"isDir"`
 }
 
 // only verified users can homeshare
@@ -104,12 +105,23 @@ func (h *Handler) DirectoryContentsHandler(w http.ResponseWriter, r *http.Reques
 
 		filePath += fileName
 
+		// Return thumbnail path if it exists
+		thumbnailPath := ""
+		if !info.IsDir() {
+			thumbnailPath = path + PathDelimiter + ".thumbnails" + PathDelimiter + fileName
+			thumbnailFullPath := homeShareRoot + thumbnailPath
+			if _, err := os.Stat(thumbnailFullPath); os.IsNotExist(err) {
+				thumbnailPath = ""
+			}
+		}
+
 		fileInfo := FileInfo{
-			Name:    fileName,
-			Path:    filePath,
-			Size:    info.Size(),
-			ModTime: info.ModTime().String(),
-			IsDir:   info.IsDir(),
+			Name:          fileName,
+			Path:          filePath,
+			ThumbnailPath: thumbnailPath,
+			Size:          info.Size(),
+			ModTime:       info.ModTime().String(),
+			IsDir:         info.IsDir(),
 		}
 
 		fileInfos[index] = fileInfo
@@ -236,15 +248,15 @@ func (h *Handler) DeleteItemHandler(w http.ResponseWriter, r *http.Request) {
 
 	path := deleteItemRequest.Path
 
-	directory := os.Getenv("HOME_SHARE_ROOT") + path
+	itemPath := os.Getenv("HOME_SHARE_ROOT") + path
 
-	err = os.RemoveAll(directory)
+	err = os.RemoveAll(itemPath)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	// TODO: Image thumbnails
+	// TODO Thumbnail for this item
 
 	response := DeleteItemResponse{
 		Path: path,

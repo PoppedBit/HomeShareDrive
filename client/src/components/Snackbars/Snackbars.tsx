@@ -52,10 +52,10 @@ const Snackbars = (props: Props) => {
           setErrorMessage!('');
         }}
         anchorOrigin={anchorOrigin as SnackbarOrigin}
-        sx={{ 
-          bottom: { 
-            xs: '5rem',
-          } 
+        sx={{
+          bottom: {
+            xs: '5rem'
+          }
         }}
       />
     );

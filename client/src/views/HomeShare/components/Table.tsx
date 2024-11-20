@@ -96,7 +96,10 @@ const Table = (props: Props) => {
         }
 
         return (
-          <IconButton href={`${import.meta.env.VITE_API_URL}/download-file?path=${value}`} download={row.name}>
+          <IconButton
+            href={`${import.meta.env.VITE_API_URL}/download-file?path=${value}`}
+            download={row.name}
+          >
             <Download />
           </IconButton>
         );

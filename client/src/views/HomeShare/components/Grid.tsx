@@ -56,7 +56,9 @@ const Grid = (props: Props) => {
   return (
     <GridContainer>
       {items.map((item) => {
-        const { name, path, size, modTime, isDir } = item;
+        const { name, path, thumbnailPath = '', size, modTime, isDir } = item;
+
+        console.log(path, thumbnailPath);
 
         const fileExt = name.split('.').pop();
         const isImage = IMAGE_EXTENSIONS.includes(fileExt ?? '');
@@ -74,7 +76,10 @@ const Grid = (props: Props) => {
                   </IconButton>
                 ) : (
                   <Tooltip title="Download" placement="top">
-                    <IconButton href={`${import.meta.env.VITE_API_URL}/download-file?path=${path}`} download={name}>
+                    <IconButton
+                      href={`${import.meta.env.VITE_API_URL}/download-file?path=${path}`}
+                      download={name}
+                    >
                       <Download />
                     </IconButton>
                   </Tooltip>
@@ -82,7 +87,11 @@ const Grid = (props: Props) => {
               }
             />
             <GridCardMedia
-              image={isImage ? `${import.meta.env.VITE_API_URL}/download-file?path=${path}` : undefined}
+              image={
+                isImage
+                  ? `${import.meta.env.VITE_API_URL}/download-file?path=${thumbnailPath.length ? thumbnailPath : path}`
+                  : undefined
+              }
               onClick={() => {
                 if (!isImage) {
                   return;

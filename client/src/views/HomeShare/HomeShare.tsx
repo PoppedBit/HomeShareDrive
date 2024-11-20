@@ -44,8 +44,7 @@ const HomeShare = () => {
   const homeshare = useSelector((state: TODO) => state.homeshare);
   const { path, items } = homeshare;
 
-  const { isLoading, getDirectoryContents, addDirectory, uploadFiles, renameItem } =
-    useHomeShare();
+  const { isLoading, getDirectoryContents, addDirectory, uploadFiles, renameItem } = useHomeShare();
 
   const isRoot = path === '/';
 
