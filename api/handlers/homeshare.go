@@ -2,6 +2,9 @@ package handlers
 
 import (
 	"encoding/json"
+	"image"
+	"image/jpeg"
+	"image/png"
 	"io"
 	"net/http"
 	"os"
@@ -10,9 +13,13 @@ import (
 	"strings"
 
 	"github.com/PoppedBit/HomeShareDrive/models"
+	"golang.org/x/image/draw"
 )
 
 var PathDelimiter = string(filepath.Separator)
+
+var imageExtensions = []string{".jpg", ".jpeg", ".png"}
+var thumbWidth = 300
 
 type FileInfo struct {
 	Name    string `json:"name"`
@@ -84,6 +91,11 @@ func (h *Handler) DirectoryContentsHandler(w http.ResponseWriter, r *http.Reques
 		}
 
 		fileName := file.Name()
+
+		// skip anything that starts with a dot
+		if strings.HasPrefix(fileName, ".") {
+			continue
+		}
 
 		filePath := path
 		if path != PathDelimiter {
@@ -379,7 +391,83 @@ func (h *Handler) UploadFileHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	// TODO: Image thumbnails
+	// Thumbnails
+	extension := filepath.Ext(filePath)
+	isImage := false
+	for _, imageExtension := range imageExtensions {
+		if extension == imageExtension {
+			isImage = true
+			break
+		}
+	}
+
+	if isImage {
+		err = generateThumbnail(filePath)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+	}
 
 	w.WriteHeader(http.StatusCreated)
+}
+
+func generateThumbnail(filePath string) error {
+
+	imageFile, err := os.Open(filePath)
+	if err != nil {
+		return err
+	}
+	defer imageFile.Close()
+
+	srcImage, _, err := image.Decode(imageFile)
+	if err != nil {
+		return err
+	}
+
+	srcBounds := srcImage.Bounds()
+	srcWidth := srcBounds.Dx()
+	srcHeight := srcBounds.Dy()
+
+	var newWidth, newHeight int
+
+	if srcWidth > thumbWidth {
+		newWidth = thumbWidth
+		newHeight = srcHeight * thumbWidth / srcWidth
+	} else {
+		newWidth = srcWidth
+		newHeight = srcHeight
+	}
+
+	thumbnail := image.NewRGBA(image.Rect(0, 0, newWidth, newHeight))
+
+	draw.ApproxBiLinear.Scale(thumbnail, thumbnail.Rect, srcImage, srcImage.Bounds(), draw.Over, nil)
+
+	// Thumbnail Path = {fileDir}/.thumbnails/{fileName}
+	fileDir := filepath.Dir(filePath)
+	thumbDir := fileDir + PathDelimiter + ".thumbnails"
+	err = os.MkdirAll(thumbDir, 0755)
+	if err != nil {
+		return err
+	}
+	thumbnailPath := thumbDir + PathDelimiter + filepath.Base(filePath)
+
+	thumbFile, err := os.Create(thumbnailPath)
+	if err != nil {
+		return err
+	}
+	defer thumbFile.Close()
+
+	ext := filepath.Ext(filePath)
+	if ext == ".jpg" || ext == ".jpeg" {
+		err = jpeg.Encode(thumbFile, thumbnail, nil)
+	} else if ext == ".png" {
+		err = png.Encode(thumbFile, thumbnail)
+	}
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
