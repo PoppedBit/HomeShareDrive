@@ -3,7 +3,7 @@ import { DragIndicator } from '@mui/icons-material';
 import { TableContainer } from '@mui/material';
 
 export const Container = styled(TableContainer)({
-  marginBottom: '15px'
+  marginBottom: '1rem'
 });
 
 export const DragIcon = styled(DragIndicator)({

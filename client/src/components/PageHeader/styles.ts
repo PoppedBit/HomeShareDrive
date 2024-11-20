@@ -2,7 +2,7 @@ import styled from '@emotion/styled';
 import { Link } from 'react-router-dom';
 
 export const Header = styled('div')({
-  marginBottom: '15px'
+  marginBottom: '1rem'
 });
 
 export const HeaderText = styled('div')({

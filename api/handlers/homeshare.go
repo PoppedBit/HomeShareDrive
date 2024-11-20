@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 
 	"github.com/PoppedBit/HomeShareDrive/models"
@@ -231,6 +232,8 @@ func (h *Handler) DeleteItemHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// TODO: Image thumbnails
+
 	response := DeleteItemResponse{
 		Path: path,
 	}
@@ -284,6 +287,8 @@ func (h *Handler) RenameItemHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
+	// TODO: Image thumbnails
 
 	response := RenameItemResponse{
 		Path: path,
@@ -364,6 +369,17 @@ func (h *Handler) UploadFileHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
+	// Linux permissions
+	if runtime.GOOS != "windows" {
+		err := os.Chmod(filePath, 0o775)
+		if err != nil {
+			http.Error(w, "Error setting file permissions", http.StatusInternalServerError)
+			return
+		}
+	}
+
+	// TODO: Image thumbnails
 
 	w.WriteHeader(http.StatusCreated)
 }

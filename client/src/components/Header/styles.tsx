@@ -4,8 +4,8 @@ import { Link } from 'react-router-dom';
 
 export const StyledAppBar = styled(AppBar)({
   boxShadow: 'none',
-  height: '64px',
-  lineHeight: '64px'
+  height: '4rem',
+  lineHeight: '4rem'
 });
 
 export const SiteTitleLink = styled(Link)({
@@ -18,8 +18,8 @@ export const MainGrid = styled(Grid)({
 });
 
 export const MainTypopgraphy = styled(Typography)({
-  lineHeight: '64px',
-  fontSize: '32px'
+  lineHeight: '4rem',
+  fontSize: '2rem'
 });
 
 export const RightGrid = styled(Grid)({

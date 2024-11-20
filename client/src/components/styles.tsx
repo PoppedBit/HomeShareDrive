@@ -3,7 +3,7 @@ import { Check } from '@mui/icons-material';
 import { Divider as MuiDivider } from '@mui/material';
 
 export const Divider = styled(MuiDivider)({
-  margin: '15px 0px'
+  margin: '1rem 0'
 });
 
 export const Form = styled('form')({
@@ -26,7 +26,7 @@ export const Form = styled('form')({
   },
 
   '& > button': {
-    marginTop: '15px 0px 5px 0px',
+    marginTop: '1rem 0 .25rem 0',
     width: '100%'
   }
 });

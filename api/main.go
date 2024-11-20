@@ -29,7 +29,7 @@ func main() {
 	cookieStore := sessions.NewCookieStore([]byte(cookieSecret))
 	cookieStore.Options = &sessions.Options{
 		Path:     "/",
-		MaxAge:   3600, // TODO figure out how long this is
+		MaxAge:   7 * 24 * 60 * 60, // 7 days
 		HttpOnly: true,
 		SameSite: http.SameSiteLaxMode, // Adjust as needed
 	}
