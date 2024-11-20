@@ -250,13 +250,33 @@ func (h *Handler) DeleteItemHandler(w http.ResponseWriter, r *http.Request) {
 
 	itemPath := os.Getenv("HOME_SHARE_ROOT") + path
 
-	err = os.RemoveAll(itemPath)
+	info, err := os.Stat(itemPath)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	// TODO Thumbnail for this item
+	// Delete thumbnail if it exists
+	if !info.IsDir() {
+		fileDir := filepath.Dir(itemPath)
+		fileName := filepath.Base(itemPath)
+		thumbnailPath := fileDir + PathDelimiter + ".thumbnails" + PathDelimiter + fileName
+
+		if _, err := os.Stat(thumbnailPath); err == nil {
+			println("deleting thumbnail")
+			err = os.Remove(thumbnailPath)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+		}
+	}
+
+	err = os.RemoveAll(itemPath)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 
 	response := DeleteItemResponse{
 		Path: path,
