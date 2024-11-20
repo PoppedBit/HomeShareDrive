@@ -90,7 +90,7 @@ func (h *Handler) DirectoryContentsHandler(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	var fileInfos []FileInfo
+	fileInfos := []FileInfo{}
 	for _, file := range files {
 		info, err := file.Info()
 		if err != nil {
