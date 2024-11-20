@@ -23,7 +23,7 @@ const HomeShare = () => {
   const dispatch = useDispatch();
   const [searchParams] = useSearchParams();
   const pathParam = searchParams.get('path') ?? '/';
-  const [view, setView] = useState<'table' | 'grid'>('table');
+  const [view, setView] = useState<'table' | 'grid'>('grid');
 
   const [isUploadDialogOpen, setIsUploadDialogOpen] = useState<boolean>(false);
   const [isNameDialogOpen, setIsNameDialogOpen] = useState<boolean | FileInfo>(false);

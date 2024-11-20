@@ -29,6 +29,9 @@ import { extToIcon, formatBytes, IMAGE_EXTENSIONS } from '../util';
 import { formatTimestamp } from 'utils';
 import { useState } from 'react';
 import { Dialog } from 'components';
+import { setConfirmationMessage } from 'store/slices/notifications';
+import { useHomeShare } from 'hooks';
+import { useDispatch } from 'react-redux';
 
 interface Props {
   items: FileInfo[];
@@ -37,6 +40,7 @@ interface Props {
 const Grid = (props: Props) => {
   const { items } = props;
 
+  const dispatch = useDispatch();
   const [isPreviewOpen, setIsPreviewOpen] = useState<FileInfo | undefined>(undefined);
 
   const imageFiles = items.filter((file) =>
@@ -53,12 +57,23 @@ const Grid = (props: Props) => {
     setIsPreviewOpen(newPreviewFile);
   };
 
+  const { deleteItem } = useHomeShare();
+
+  const handleClickDelete = (row: FileInfo) => {
+    dispatch(
+      setConfirmationMessage({
+        title: `Are you sure you want to delete ${row.name}?`,
+        onConfirm: () => {
+          deleteItem(row.path);
+        }
+      })
+    );
+  };
+
   return (
     <GridContainer>
       {items.map((item) => {
         const { name, path, thumbnailPath = '', size, modTime, isDir } = item;
-
-        console.log(path, thumbnailPath);
 
         const fileExt = name.split('.').pop();
         const isImage = IMAGE_EXTENSIONS.includes(fileExt ?? '');
@@ -116,9 +131,7 @@ const Grid = (props: Props) => {
               </Tooltip>
               <Tooltip title="Delete" placement="top">
                 <IconButton
-                  onClick={() => {
-                    alert('TODO');
-                  }}
+                  onClick={() => handleClickDelete(item)}
                 >
                   <Delete />
                 </IconButton>
