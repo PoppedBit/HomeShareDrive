@@ -153,14 +153,14 @@ const App = () => {
                     dispatch(setConfirmationMessage(null));
                   }}
                 >
-                  Submit
+                  Yes
                 </Button>
                 <Button
                   onClick={() => {
                     dispatch(setConfirmationMessage(null));
                   }}
                 >
-                  Cancel
+                  No
                 </Button>
               </>
             }

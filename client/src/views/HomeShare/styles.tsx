@@ -8,7 +8,7 @@ export const Controls = styled('div')({
 
 export const GridContainer = styled('div')({
   display: 'grid',
-  gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
+  gridTemplateColumns: 'repeat(auto-fill, minmax(13rem, 1fr))',
   gap: '1rem'
 });
 
