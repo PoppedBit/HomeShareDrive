@@ -12,6 +12,8 @@
 
 ### Configuration
 
+#### Important Files
+
 docker-compose.yml
 
 Dockerfile
@@ -44,6 +46,12 @@ Get IP Address
 sudo docker-compose up --no-start
 sudo docker start homeshare
 sudo docker exec -it homeshare
+
+## Use
+
+The first account you register will be an admin
+
+Additional users can register, but to use the site, you nned to mark their email as verified
 
 
 

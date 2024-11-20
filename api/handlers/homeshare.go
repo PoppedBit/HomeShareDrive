@@ -16,6 +16,8 @@ import (
 	"golang.org/x/image/draw"
 )
 
+var homeShareRoot = os.Getenv("HOME_SHARE_ROOT")
+
 var PathDelimiter = string(filepath.Separator)
 
 var imageExtensions = []string{".jpg", ".jpeg", ".png"}
@@ -73,9 +75,12 @@ func (h *Handler) DirectoryContentsHandler(w http.ResponseWriter, r *http.Reques
 
 	path := r.URL.Query().Get("path")
 
-	homeShareRoot := os.Getenv("HOME_SHARE_ROOT")
-
 	directory := homeShareRoot + path
+
+	if !checkPathInRoot(directory) {
+		http.Error(w, "Invalid path", http.StatusBadRequest)
+		return
+	}
 
 	files, err := os.ReadDir(directory)
 	if err != nil {
@@ -183,7 +188,12 @@ func (h *Handler) CreateDirectoryHandler(w http.ResponseWriter, r *http.Request)
 	path := createDirectoryRequest.Path
 	name := createDirectoryRequest.Name
 
-	directory := os.Getenv("HOME_SHARE_ROOT") + path
+	directory := homeShareRoot + path
+
+	if !checkPathInRoot(directory) {
+		http.Error(w, "Invalid path", http.StatusBadRequest)
+		return
+	}
 
 	newDirectory := directory + PathDelimiter + name
 
@@ -248,7 +258,12 @@ func (h *Handler) DeleteItemHandler(w http.ResponseWriter, r *http.Request) {
 
 	path := deleteItemRequest.Path
 
-	itemPath := os.Getenv("HOME_SHARE_ROOT") + path
+	itemPath := homeShareRoot + path
+
+	if !checkPathInRoot(itemPath) {
+		http.Error(w, "Invalid path", http.StatusBadRequest)
+		return
+	}
 
 	info, err := os.Stat(itemPath)
 	if err != nil {
@@ -320,7 +335,7 @@ func (h *Handler) RenameItemHandler(w http.ResponseWriter, r *http.Request) {
 	path := renameItemRequest.Path
 	newName := renameItemRequest.Name
 
-	oldPath := os.Getenv("HOME_SHARE_ROOT") + path
+	oldPath := homeShareRoot + path
 
 	directory := oldPath[:len(oldPath)-len(oldPath[strings.LastIndex(oldPath, PathDelimiter):])]
 	newPath := directory + PathDelimiter + newName
@@ -358,7 +373,12 @@ func (h *Handler) DownloadFileHandler(w http.ResponseWriter, r *http.Request) {
 
 	path := r.URL.Query().Get("path")
 
-	filePath := os.Getenv("HOME_SHARE_ROOT") + path
+	filePath := homeShareRoot + path
+
+	if !checkPathInRoot(filePath) {
+		http.Error(w, "Invalid path", http.StatusBadRequest)
+		return
+	}
 
 	_, err := os.Stat(filePath)
 	if err != nil {
@@ -398,7 +418,12 @@ func (h *Handler) UploadFileHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer file.Close()
 
-	filePath := os.Getenv("HOME_SHARE_ROOT") + path + PathDelimiter + handler.Filename
+	filePath := homeShareRoot + path + PathDelimiter + handler.Filename
+
+	if !checkPathInRoot(filePath) {
+		http.Error(w, "Invalid path", http.StatusBadRequest)
+		return
+	}
 
 	newFile, err := os.Create(filePath)
 	if err != nil {
@@ -501,4 +526,13 @@ func generateThumbnail(filePath string) error {
 	}
 
 	return nil
+}
+
+// Function that ensures the path is within the root directory
+func checkPathInRoot(path string) bool {
+	if strings.Contains(path, "..") {
+		return false
+	}
+
+	return strings.HasPrefix(path, homeShareRoot)
 }
