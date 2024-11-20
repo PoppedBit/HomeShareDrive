@@ -1,7 +1,10 @@
-import { CreateNewFolder, TableRows, Upload, Window } from '@mui/icons-material';
+import { CreateNewFolder, Delete, TableRows, Upload, Window } from '@mui/icons-material';
 import {
   Button,
   IconButton,
+  List,
+  ListItem,
+  ListItemText,
   TextField,
   ToggleButton,
   ToggleButtonGroup,
@@ -36,7 +39,8 @@ const HomeShare = () => {
     register: registerUpload,
     watch: watchUpload,
     handleSubmit: handleSubmitUpload,
-    reset: resetUploadDialog
+    reset: resetUploadDialog,
+    setValue: setUploadValue,
   } = useForm();
 
   const attachedFiles: FileList | undefined = watchUpload('files');
@@ -86,10 +90,15 @@ const HomeShare = () => {
     setIsNameDialogOpen(false);
   };
 
-  const submitUploadDialog = (data: TODO) => {
-    console.log(data);
-    const { files } = data;
+  const handleRemoveFile = (index: number) => {
+    const fileArray = Array.from(attachedFiles || []); // Convert FileList to an array
+    const updatedFiles = fileArray.filter((_, i) => i !== index); // Remove the file at the specified index
+    setUploadValue("files", updatedFiles.length ? updatedFiles : undefined); // Update the field, reset if empty
+  };
 
+  const submitUploadDialog = (data: TODO) => {
+    const { files } = data;
+    
     if (files.length === 0) {
       return;
     }
@@ -178,14 +187,26 @@ const HomeShare = () => {
         <Form onSubmit={handleSubmitUpload(submitUploadDialog)}>
           <Button variant="contained" component="label">
             Attach File(s)
-            <input type="file" hidden multiple {...registerUpload('files', { required: true })} />
+            <input type="file" hidden multiple {...registerUpload('files')} />
           </Button>
           {attachedFiles && attachedFiles.length !== 0 && (
-            <ul>
+            <List dense={true}>
               {Array.from(attachedFiles).map((file, index) => (
-                <li key={index}>{file.name}</li>
+                <ListItem
+                  key={file.name}
+                  secondaryAction={
+                    <IconButton
+                      edge="end"
+                      onClick={() => handleRemoveFile(index)}
+                    >
+                      <Delete />
+                    </IconButton>
+                  }
+                >
+                  <ListItemText primary={file.name} />
+                </ListItem>
               ))}
-            </ul>
+            </List>
           )}
         </Form>
       </Dialog>
