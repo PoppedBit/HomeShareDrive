@@ -16,7 +16,9 @@ import (
 	"golang.org/x/image/draw"
 )
 
-var homeShareRoot = os.Getenv("HOME_SHARE_ROOT")
+func homeShareRoot() string {
+	return os.Getenv("HOME_SHARE_ROOT")
+}
 
 var PathDelimiter = string(filepath.Separator)
 
@@ -75,7 +77,7 @@ func (h *Handler) DirectoryContentsHandler(w http.ResponseWriter, r *http.Reques
 
 	path := r.URL.Query().Get("path")
 
-	directory := homeShareRoot + path
+	directory := homeShareRoot() + path
 
 	if !checkPathInRoot(directory) {
 		http.Error(w, "Invalid path", http.StatusBadRequest)
@@ -88,8 +90,8 @@ func (h *Handler) DirectoryContentsHandler(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	var fileInfos []FileInfo = make([]FileInfo, len(files))
-	for index, file := range files {
+	var fileInfos []FileInfo
+	for _, file := range files {
 		info, err := file.Info()
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -114,7 +116,7 @@ func (h *Handler) DirectoryContentsHandler(w http.ResponseWriter, r *http.Reques
 		thumbnailPath := ""
 		if !info.IsDir() {
 			thumbnailPath = path + PathDelimiter + ".thumbnails" + PathDelimiter + fileName
-			thumbnailFullPath := homeShareRoot + thumbnailPath
+			thumbnailFullPath := homeShareRoot() + thumbnailPath
 			if _, err := os.Stat(thumbnailFullPath); os.IsNotExist(err) {
 				thumbnailPath = ""
 			}
@@ -129,7 +131,7 @@ func (h *Handler) DirectoryContentsHandler(w http.ResponseWriter, r *http.Reques
 			IsDir:         info.IsDir(),
 		}
 
-		fileInfos[index] = fileInfo
+		fileInfos = append(fileInfos, fileInfo)
 	}
 
 	// Order by directories first, then files
@@ -188,7 +190,7 @@ func (h *Handler) CreateDirectoryHandler(w http.ResponseWriter, r *http.Request)
 	path := createDirectoryRequest.Path
 	name := createDirectoryRequest.Name
 
-	directory := homeShareRoot + path
+	directory := homeShareRoot() + path
 
 	if !checkPathInRoot(directory) {
 		http.Error(w, "Invalid path", http.StatusBadRequest)
@@ -258,7 +260,7 @@ func (h *Handler) DeleteItemHandler(w http.ResponseWriter, r *http.Request) {
 
 	path := deleteItemRequest.Path
 
-	itemPath := homeShareRoot + path
+	itemPath := homeShareRoot() + path
 
 	if !checkPathInRoot(itemPath) {
 		http.Error(w, "Invalid path", http.StatusBadRequest)
@@ -335,7 +337,7 @@ func (h *Handler) RenameItemHandler(w http.ResponseWriter, r *http.Request) {
 	path := renameItemRequest.Path
 	newName := renameItemRequest.Name
 
-	oldPath := homeShareRoot + path
+	oldPath := homeShareRoot() + path
 
 	directory := oldPath[:len(oldPath)-len(oldPath[strings.LastIndex(oldPath, PathDelimiter):])]
 	newPath := directory + PathDelimiter + newName
@@ -373,7 +375,7 @@ func (h *Handler) DownloadFileHandler(w http.ResponseWriter, r *http.Request) {
 
 	path := r.URL.Query().Get("path")
 
-	filePath := homeShareRoot + path
+	filePath := homeShareRoot() + path
 
 	if !checkPathInRoot(filePath) {
 		http.Error(w, "Invalid path", http.StatusBadRequest)
@@ -418,7 +420,7 @@ func (h *Handler) UploadFileHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer file.Close()
 
-	filePath := homeShareRoot + path + PathDelimiter + handler.Filename
+	filePath := homeShareRoot() + path + PathDelimiter + handler.Filename
 
 	if !checkPathInRoot(filePath) {
 		http.Error(w, "Invalid path", http.StatusBadRequest)
@@ -534,5 +536,5 @@ func checkPathInRoot(path string) bool {
 		return false
 	}
 
-	return strings.HasPrefix(path, homeShareRoot)
+	return strings.HasPrefix(path, homeShareRoot())
 }
