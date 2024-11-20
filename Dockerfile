@@ -26,6 +26,11 @@ COPY --from=build /app/homeshare .
 # Copy the .env file from the build stage
 COPY api/.env.docker .env
 
+# Install Node.js and npm
+RUN apt-get update && apt-get install -y nodejs npm
+
+# TODO - build the react app
+
 # Copy the pre-built React app's public directory
 COPY api/public /public
 
