@@ -1,24 +1,14 @@
 # Home Share Drive
 
-## Development
-
-### Swagger
-
-`go install github.com/swaggo/swag/cmd/swag@latest`
-
-`swag init`
-
 ## Deployment Via Docker
 
 ### Configuration
 
-#### Important Files
+#### docker-compose.yml
 
-docker-compose.yml
+Under `volumes`, modify the left side to be the absolute path to where the root of the homeshare will be:
 
-Dockerfile
-
-.env.docker
+`/absolute/path/on/real/filesystem:/mnt/homeshare`
 
 ### Build and Run
 
@@ -53,6 +43,13 @@ The first account you register will be an admin
 
 Additional users can register, but to use the site, you nned to mark their email as verified
 
+## Development
+
+### Swagger
+
+`go install github.com/swaggo/swag/cmd/swag@latest`
+
+`swag init`
 
 
 
