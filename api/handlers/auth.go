@@ -110,12 +110,19 @@ func (h *Handler) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	isAdmin := false
 	// If this is the first user, make them an admin
 	var users []models.User
 	h.DB.Find(&users)
+
+	isAdmin := false
 	if len(users) == 0 {
 		isAdmin = true
+	}
+
+	// First two users are automatically verified
+	isEmailVerified := false
+	if len(users) < 2 {
+		isEmailVerified = true
 	}
 
 	// Create the user
@@ -123,7 +130,7 @@ func (h *Handler) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		Username:         username,
 		OriginalUsername: username,
 		Email:            email,
-		IsEmailVerified:  false,
+		IsEmailVerified:  isEmailVerified,
 		PasswordHash:     passwordHash,
 		PasswordSalt:     salt,
 		IsAdmin:          isAdmin,

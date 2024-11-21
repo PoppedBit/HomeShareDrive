@@ -41,6 +41,8 @@ sudo docker exec -it homeshare
 
 The first account you register will be an admin
 
+The seconf account will not be an admin, but will have their email verified(so you don't have to do this)
+
 Additional users can register, but to use the site, you nned to mark their email as verified
 
 ## Development
