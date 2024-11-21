@@ -19,17 +19,13 @@ sudo docker-compose up --build
 
 #### Linux
 
-Allow traffic through firewall
+Allow traffic through firewall on port 8080
 
 `sudo ufw allow 8080`
 
-Get IP Address
-
-`hostname -I`
-
 #### Windows
 
-`TODO`
+`netsh advfirewall firewall add rule name="Allow Port 8080" dir=in action=allow protocol=TCP localport=8080`
 
 ### Debugging
 
