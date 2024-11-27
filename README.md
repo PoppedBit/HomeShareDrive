@@ -29,7 +29,7 @@ Allow traffic through firewall on port 8080
 
 ### Debugging
 
-sudo docker-compose up --no-start
+sudo docker-compose up
 sudo docker start homeshare
 sudo docker exec -it homeshare
 

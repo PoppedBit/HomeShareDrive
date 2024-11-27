@@ -58,6 +58,7 @@ func main() {
 	port := os.Getenv("PORT")
 	localIP := getLocalIP()
 
+	fmt.Print("\033[H\033[2J") // Clear terminal
 	println("Server running at http://localhost:" + port + "/app")
 	println("Network: http://" + localIP + ":" + port + "/app")
 	log.Fatal(http.ListenAndServe(":"+port, router))
