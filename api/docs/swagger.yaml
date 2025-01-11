@@ -31,8 +31,12 @@ definitions:
         type: string
       name:
         type: string
+      path:
+        type: string
       size:
         type: integer
+      thumbnailPath:
+        type: string
     type: object
   handlers.GetDirectoryContentsResponse:
     properties:
@@ -230,6 +234,17 @@ paths:
           schema:
             $ref: '#/definitions/handlers.RenameItemResponse'
       summary: Rename Item
+      tags:
+      - homeshare
+  /upload-file:
+    post:
+      consumes:
+      - application/json
+      description: Upload a file
+      produces:
+      - application/json
+      responses: {}
+      summary: Upload File
       tags:
       - homeshare
 swagger: "2.0"

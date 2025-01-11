@@ -264,6 +264,22 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/upload-file": {
+            "post": {
+                "description": "Upload a file",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "homeshare"
+                ],
+                "summary": "Upload File",
+                "responses": {}
+            }
         }
     },
     "definitions": {
@@ -317,8 +333,14 @@ const docTemplate = `{
                 "name": {
                     "type": "string"
                 },
+                "path": {
+                    "type": "string"
+                },
                 "size": {
                     "type": "integer"
+                },
+                "thumbnailPath": {
+                    "type": "string"
                 }
             }
         },

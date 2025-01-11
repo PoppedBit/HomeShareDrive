@@ -339,6 +339,11 @@ func (h *Handler) RenameItemHandler(w http.ResponseWriter, r *http.Request) {
 
 	oldPath := homeShareRoot() + path
 
+	if !checkPathInRoot(oldPath) {
+		http.Error(w, "Invalid path", http.StatusBadRequest)
+		return
+	}
+
 	directory := oldPath[:len(oldPath)-len(oldPath[strings.LastIndex(oldPath, PathDelimiter):])]
 	newPath := directory + PathDelimiter + newName
 
@@ -395,8 +400,8 @@ func (h *Handler) DownloadFileHandler(w http.ResponseWriter, r *http.Request) {
 // @Tags homeshare
 // @Summary Upload File
 // @Description Upload a file
-// @Accept ???
-// @Produce ???
+// @Accept json
+// @Produce json
 func (h *Handler) UploadFileHandler(w http.ResponseWriter, r *http.Request) {
 	isAuthorized := CheckCanHomeshare(h, r)
 	if !isAuthorized {
