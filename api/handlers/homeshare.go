@@ -382,6 +382,9 @@ func (h *Handler) DownloadFileHandler(w http.ResponseWriter, r *http.Request) {
 
 	filePath := homeShareRoot() + path
 
+	println(path)
+	println(filePath)
+
 	if !checkPathInRoot(filePath) {
 		http.Error(w, "Invalid path", http.StatusBadRequest)
 		return
