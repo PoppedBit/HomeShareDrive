@@ -75,7 +75,7 @@ const Grid = (props: Props) => {
       {items.map((item) => {
         const { name, path, thumbnailPath = '', size, modTime, isDir } = item;
 
-        const fileExt = name.split('.').pop();
+        const fileExt = name.split('.').pop()?.toLocaleLowerCase();
         const isImage = IMAGE_EXTENSIONS.includes(fileExt ?? '');
 
         return (

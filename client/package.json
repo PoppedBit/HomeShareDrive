@@ -9,6 +9,7 @@
     "build:test": "tsc && vite build --mode test",
     "build:production": "tsc && vite build --mode production",
     "build:production:local": "tsc && vite build --mode production.local && cp -r dist/* ../api/public",
+    "build:production:local-win": "tsc && vite build --mode production.local && xcopy dist ..\\api\\public /E",
     "build:production:docker": "tsc && vite build --mode production.docker",
     "prettier:check": "prettier --check .",
     "prettier:write": "prettier --write ."

@@ -21,6 +21,14 @@ func homeShareRoot() string {
 }
 
 var PathDelimiter = string(filepath.Separator)
+var IsWindows = PathDelimiter == "\\"
+
+func ProcessPath(path string) string {
+	if IsWindows {
+		return strings.ReplaceAll(path, "/", "\\")
+	}
+	return path
+}
 
 var imageExtensions = []string{".jpg", ".jpeg", ".png"}
 var thumbWidth = 300
@@ -77,7 +85,7 @@ func (h *Handler) DirectoryContentsHandler(w http.ResponseWriter, r *http.Reques
 
 	path := r.URL.Query().Get("path")
 
-	directory := homeShareRoot() + path
+	directory := ProcessPath(homeShareRoot() + path)
 
 	if !checkPathInRoot(directory) {
 		http.Error(w, "Invalid path", http.StatusBadRequest)
@@ -190,7 +198,7 @@ func (h *Handler) CreateDirectoryHandler(w http.ResponseWriter, r *http.Request)
 	path := createDirectoryRequest.Path
 	name := createDirectoryRequest.Name
 
-	directory := homeShareRoot() + path
+	directory := ProcessPath(homeShareRoot() + path)
 
 	if !checkPathInRoot(directory) {
 		http.Error(w, "Invalid path", http.StatusBadRequest)
@@ -260,7 +268,7 @@ func (h *Handler) DeleteItemHandler(w http.ResponseWriter, r *http.Request) {
 
 	path := deleteItemRequest.Path
 
-	itemPath := homeShareRoot() + path
+	itemPath := ProcessPath(homeShareRoot() + path)
 
 	if !checkPathInRoot(itemPath) {
 		http.Error(w, "Invalid path", http.StatusBadRequest)
@@ -337,7 +345,7 @@ func (h *Handler) RenameItemHandler(w http.ResponseWriter, r *http.Request) {
 	path := renameItemRequest.Path
 	newName := renameItemRequest.Name
 
-	oldPath := homeShareRoot() + path
+	oldPath := ProcessPath(homeShareRoot() + path)
 
 	if !checkPathInRoot(oldPath) {
 		http.Error(w, "Invalid path", http.StatusBadRequest)
@@ -380,10 +388,7 @@ func (h *Handler) DownloadFileHandler(w http.ResponseWriter, r *http.Request) {
 
 	path := r.URL.Query().Get("path")
 
-	filePath := homeShareRoot() + path
-
-	println(path)
-	println(filePath)
+	filePath := ProcessPath(homeShareRoot() + path)
 
 	if !checkPathInRoot(filePath) {
 		http.Error(w, "Invalid path", http.StatusBadRequest)
@@ -428,7 +433,7 @@ func (h *Handler) UploadFileHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer file.Close()
 
-	filePath := homeShareRoot() + path + PathDelimiter + handler.Filename
+	filePath := ProcessPath(homeShareRoot() + path + PathDelimiter + handler.Filename)
 
 	if !checkPathInRoot(filePath) {
 		http.Error(w, "Invalid path", http.StatusBadRequest)
@@ -459,6 +464,8 @@ func (h *Handler) UploadFileHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Thumbnails
 	extension := filepath.Ext(filePath)
+	extension = strings.ToLower(extension)
+
 	isImage := false
 	for _, imageExtension := range imageExtensions {
 		if extension == imageExtension {
@@ -516,6 +523,7 @@ func generateThumbnail(filePath string) error {
 	if err != nil {
 		return err
 	}
+
 	thumbnailPath := thumbDir + PathDelimiter + filepath.Base(filePath)
 
 	thumbFile, err := os.Create(thumbnailPath)
