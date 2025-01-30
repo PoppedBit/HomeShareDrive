@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"image"
 	"image/jpeg"
 	"image/png"
@@ -23,11 +24,20 @@ func homeShareRoot() string {
 var PathDelimiter = string(filepath.Separator)
 var IsWindows = PathDelimiter == "\\"
 
-func ProcessPath(path string) string {
+func processPath(path string) string {
 	if IsWindows {
 		return strings.ReplaceAll(path, "/", "\\")
 	}
 	return path
+}
+
+// Function that ensures the path is within the root directory
+func checkPathInRoot(path string) bool {
+	if strings.Contains(path, "..") {
+		return false
+	}
+
+	return strings.HasPrefix(path, homeShareRoot())
 }
 
 var imageExtensions = []string{".jpg", ".jpeg", ".png"}
@@ -85,7 +95,7 @@ func (h *Handler) DirectoryContentsHandler(w http.ResponseWriter, r *http.Reques
 
 	path := r.URL.Query().Get("path")
 
-	directory := ProcessPath(homeShareRoot() + path)
+	directory := processPath(homeShareRoot() + path)
 
 	if !checkPathInRoot(directory) {
 		http.Error(w, "Invalid path", http.StatusBadRequest)
@@ -198,7 +208,7 @@ func (h *Handler) CreateDirectoryHandler(w http.ResponseWriter, r *http.Request)
 	path := createDirectoryRequest.Path
 	name := createDirectoryRequest.Name
 
-	directory := ProcessPath(homeShareRoot() + path)
+	directory := processPath(homeShareRoot() + path)
 
 	if !checkPathInRoot(directory) {
 		http.Error(w, "Invalid path", http.StatusBadRequest)
@@ -268,7 +278,7 @@ func (h *Handler) DeleteItemHandler(w http.ResponseWriter, r *http.Request) {
 
 	path := deleteItemRequest.Path
 
-	itemPath := ProcessPath(homeShareRoot() + path)
+	itemPath := processPath(homeShareRoot() + path)
 
 	if !checkPathInRoot(itemPath) {
 		http.Error(w, "Invalid path", http.StatusBadRequest)
@@ -345,7 +355,7 @@ func (h *Handler) RenameItemHandler(w http.ResponseWriter, r *http.Request) {
 	path := renameItemRequest.Path
 	newName := renameItemRequest.Name
 
-	oldPath := ProcessPath(homeShareRoot() + path)
+	oldPath := processPath(homeShareRoot() + path)
 
 	if !checkPathInRoot(oldPath) {
 		http.Error(w, "Invalid path", http.StatusBadRequest)
@@ -388,7 +398,7 @@ func (h *Handler) DownloadFileHandler(w http.ResponseWriter, r *http.Request) {
 
 	path := r.URL.Query().Get("path")
 
-	filePath := ProcessPath(homeShareRoot() + path)
+	filePath := processPath(homeShareRoot() + path)
 
 	if !checkPathInRoot(filePath) {
 		http.Error(w, "Invalid path", http.StatusBadRequest)
@@ -433,7 +443,7 @@ func (h *Handler) UploadFileHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer file.Close()
 
-	filePath := ProcessPath(homeShareRoot() + path + PathDelimiter + handler.Filename)
+	filePath := processPath(homeShareRoot() + path + PathDelimiter + handler.Filename)
 
 	if !checkPathInRoot(filePath) {
 		http.Error(w, "Invalid path", http.StatusBadRequest)
@@ -487,6 +497,18 @@ func (h *Handler) UploadFileHandler(w http.ResponseWriter, r *http.Request) {
 
 func generateThumbnail(filePath string) error {
 
+	// Thumbnail Path = {fileDir}/.thumbnails/{fileName}
+	fileDir := filepath.Dir(filePath)
+	thumbDir := fileDir + PathDelimiter + ".thumbnails"
+	thumbnailPath := thumbDir + PathDelimiter + filepath.Base(filePath)
+
+	// if thumbnail already exists, skip
+	if _, err := os.Stat(thumbnailPath); err == nil {
+		return nil
+	}
+
+	println("Generating thumbnail for " + filePath)
+
 	imageFile, err := os.Open(filePath)
 	if err != nil {
 		return err
@@ -516,15 +538,10 @@ func generateThumbnail(filePath string) error {
 
 	draw.ApproxBiLinear.Scale(thumbnail, thumbnail.Rect, srcImage, srcImage.Bounds(), draw.Over, nil)
 
-	// Thumbnail Path = {fileDir}/.thumbnails/{fileName}
-	fileDir := filepath.Dir(filePath)
-	thumbDir := fileDir + PathDelimiter + ".thumbnails"
 	err = os.MkdirAll(thumbDir, 0755)
 	if err != nil {
 		return err
 	}
-
-	thumbnailPath := thumbDir + PathDelimiter + filepath.Base(filePath)
 
 	thumbFile, err := os.Create(thumbnailPath)
 	if err != nil {
@@ -533,6 +550,8 @@ func generateThumbnail(filePath string) error {
 	defer thumbFile.Close()
 
 	ext := filepath.Ext(filePath)
+	ext = strings.ToLower(ext)
+
 	if ext == ".jpg" || ext == ".jpeg" {
 		err = jpeg.Encode(thumbFile, thumbnail, nil)
 	} else if ext == ".png" {
@@ -546,11 +565,62 @@ func generateThumbnail(filePath string) error {
 	return nil
 }
 
-// Function that ensures the path is within the root directory
-func checkPathInRoot(path string) bool {
-	if strings.Contains(path, "..") {
-		return false
+// @Router /ensure-thumbnails [get]
+// @Tags homeshare
+// @Summary Ensure Thumbnails
+// @Description Travserses homeshare, generating thumbnails for images
+// @Accept json
+// @Produce json
+func (h *Handler) EnsureThumbnailsHandler(w http.ResponseWriter, r *http.Request) {
+	isAuthorized := CheckCanHomeshare(h, r)
+	if !isAuthorized {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
 	}
 
-	return strings.HasPrefix(path, homeShareRoot())
+	count := createDirectoryThumbnails(homeShareRoot())
+
+	fmt.Sprintf("Generated %d thumbnails", count)
+
+	w.WriteHeader(http.StatusOK)
+}
+
+func createDirectoryThumbnails(directory string) int {
+	files, err := os.ReadDir(directory)
+	if err != nil {
+		return 0
+	}
+
+	count := 0
+	for _, file := range files {
+		info, err := file.Info()
+		if err != nil {
+			continue
+		}
+
+		if info.IsDir() && !strings.HasPrefix(info.Name(), ".") {
+			count += createDirectoryThumbnails(directory + PathDelimiter + info.Name())
+		} else {
+			ext := filepath.Ext(info.Name())
+			ext = strings.ToLower(ext)
+
+			isImage := false
+			for _, imageExtension := range imageExtensions {
+				if ext == imageExtension {
+					isImage = true
+					break
+				}
+			}
+
+			if isImage {
+				filePath := directory + PathDelimiter + info.Name()
+				err = generateThumbnail(filePath)
+				if err == nil {
+					count++
+				}
+			}
+		}
+	}
+
+	return count
 }

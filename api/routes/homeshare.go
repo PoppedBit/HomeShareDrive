@@ -12,6 +12,8 @@ func registerHomeShareRoutes(r *mux.Router, handler *handlers.Handler) {
 	r.HandleFunc("/rename-item", handler.RenameItemHandler).Methods("POST")
 	r.HandleFunc("/download-file", handler.DownloadFileHandler).Methods("GET")
 	r.HandleFunc("/upload-file", handler.UploadFileHandler).Methods("POST")
+	r.HandleFunc("/ensure-thumbnails", handler.EnsureThumbnailsHandler).Methods("GET")
+	// TODO - Clean up thumbnails
 	// TODO - Move
 	// TODO - Copy
 	// TODO - download directory
